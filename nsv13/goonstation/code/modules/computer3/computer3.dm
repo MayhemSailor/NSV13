@@ -33,7 +33,7 @@
 	var/setup_os_string = null
 	var/setup_font_color = "#19A319"
 	var/setup_bg_color = "#1B1E1B"
-	power_usage = 250
+//	power_usage = 250
 
 	generic //Generic computer, standard os and card scanner
 		setup_drive_type = /obj/item/disk/data/fixed_disk/computer3
@@ -329,8 +329,8 @@
 	if(..())
 		return
 
-	if(!user.literate)
-		boutput(user, "<span style=\"color:red\">You don't know how to read or write, operating a computer isn't going to work!</span>")
+	if(!user.is_literate())
+		to_chat(user, "<span style=\"color:red\">You don't know how to read or write, operating a computer isn't going to work!</span>")
 		return
 
 	if ((user.machine == src) && (src.current_user == user))
@@ -552,7 +552,7 @@ function lineEnter (ev)
 		dat += {"<td><a href='byond://?src=\ref[src];restart=1'>Restart</a></td>
 		</body>"}
 
-		user.Browse(dat,"window=comp3;size=455x405")
+		user.browse(dat,"window=comp3;size=455x405")
 		onclose(user,"comp3")
 	return
 
@@ -580,23 +580,23 @@ function lineEnter (ev)
 		if (src.diskette)
 			//Ai/cyborgs cannot press a physical button from a room away.
 			if((issilicon(usr) || isAI(usr)) && get_dist(src, usr) > 1)
-				boutput(usr, "<span style=\"color:red\">You cannot press the ejection button.</span>")
+				to_chat(usr, "<span style=\"color:red\">You cannot press the ejection button.</span>")
 				return
 
 			for(var/datum/computer/file/terminal_program/P in src.processing_programs)
 				P.disk_ejected(src.diskette)
 
-			usr.put_in_hand_or_eject(src.diskette) // try to eject it into the users hand, if we can
-			src.diskette.set_loc(get_turf(src))
+			usr.put_in_hands(src.diskette) // try to eject it into the users hand, if we can
+			//src.diskette.set_loc(get_turf(src))
 			src.diskette = null
 			usr << output(url_encode("Disk: <a href='byond://?src=\ref[src];disk=1'>-----</a>"),"comp3.browser:setInternalDisk")
 		else
 			var/obj/item/I = usr.equipped()
 			if (istype(I, /obj/item/disk/data/floppy))
-				usr.drop_item()
-				I.set_loc(src)
+				usr.transferItemToLoc(I,src)
 				src.diskette = I
 				usr << output(url_encode("Disk: <a href='byond://?src=\ref[src];disk=1'>Eject</a>"),"comp3.browser:setInternalDisk")
+				/*MagTractor
 			else if (istype(I, /obj/item/magtractor))
 				var/obj/item/magtractor/mag = I
 				if (istype(mag.holding, /obj/item/disk/data/floppy))
@@ -605,7 +605,7 @@ function lineEnter (ev)
 					I.set_loc(src)
 					src.diskette = I
 					usr << output(url_encode("Disk: <a href='byond://?src=\ref[src];disk=1'>Eject</a>"),"comp3.browser:setInternalDisk")
-
+				*/
 	else if(href_list["restart"] && !src.restarting)
 		src.restart()
 
@@ -821,8 +821,8 @@ function lineEnter (ev)
 			src.active_program = null
 
 		//boutput(world, "Now calling del on [file]...")
-		//qdel(file)
-		theFile.dispose()
+		qdel(file)
+//		theFile.dispose()
 		return 1
 
 	send_command(command, datum/signal/signal, target_ref)
@@ -833,7 +833,8 @@ function lineEnter (ev)
 		var/obj/item/peripheral/P = locate(target_ref) in src.peripherals
 		if(istype(P))
 			. = P.receive_command(src, command, signal)
-		//qdel(signal)
+		qdel(signal)
+		/* pooling man bad
 		if (signal)
 
 			if (reusable_signals && reusable_signals.len < 11)
@@ -843,6 +844,7 @@ function lineEnter (ev)
 			else
 				signal.dispose()
 		return
+		*/
 
 	receive_command(obj/source, command, datum/signal/signal)
 		if(source in src.contents)
