@@ -15,6 +15,8 @@
 		#include "map_files\Enterprise\Enterprise1.dmm"
 		#include "map_files\Enterprise\Enterprise2.dmm"
 		#include "map_files\Hammerhead\Hammerhead.dmm"
+		#include "map_files\Galactica\Galactica2.dmm"
+		#include "map_files\Galactica\Galactica.dmm"
 		#include "map_files\Hephaestus\Hephaestus1.dmm"
 		#include "map_files\Hephaestus\Hephaestus2.dmm"
 
