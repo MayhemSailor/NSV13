@@ -310,7 +310,7 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/start/new_player)
 	GLOB.xeno_spawn += loc
 	return INITIALIZE_HINT_QDEL
 
-//objects with the stationloving component (nuke disk) respawn here. 
+//objects with the stationloving component (nuke disk) respawn here.
 //also blobs that have their spawn forcemoved (running out of time when picking their spawn spot), santa and respawning devils
 /obj/effect/landmark/blobstart
 	name = "blobstart"
@@ -445,3 +445,20 @@ INITIALIZE_IMMEDIATE(/obj/effect/landmark/start/new_player)
 	GLOB.ruin_landmarks -= src
 	ruin_template = null
 	. = ..()
+
+//NSV START
+
+/obj/effect/landmark/driving_direction
+	name = "driving_direction"
+	var/road_side
+
+
+/obj/effect/landmark/driving_direction/left
+
+/obj/effect/landmark/driving_direction/right
+
+/obj/effect/landmark/filing_cabinets
+	var/secret_spawned
+	var/employment_spawned
+	var/sec_spawned
+	var/med_spawned
