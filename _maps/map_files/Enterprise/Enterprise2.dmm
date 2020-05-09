@@ -34485,9 +34485,6 @@
 /obj/structure/disposalpipe/segment,
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1,
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3,
-/obj/structure/cable{
-	icon_state = "1-2"
-	},
 /turf/open/floor/plating,
 /area/quartermaster/storage)
 "bxB" = (
@@ -40888,6 +40885,14 @@
 /obj/item/beacon,
 /turf/open/floor/engine,
 /area/science/xenobiology)
+"bZc" = (
+/obj/structure/closet/secure_closet/miner,
+/obj/item/radio/intercom{
+	name = "intra ship intercom";
+	pixel_x = -26
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "cbY" = (
 /obj/structure/grille,
 /turf/open/floor/plating,
@@ -40921,6 +40926,19 @@
 /obj/machinery/light,
 /turf/open/floor/plating,
 /area/security/execution/transfer)
+"clT" = (
+/obj/machinery/door/airlock/ship/external{
+	name = "Mining Shuttle Airlock";
+	req_one_access_txt = "31;48"
+	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 8
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "cms" = (
 /obj/structure/closet/firecloset,
 /turf/open/floor/plating,
@@ -40961,27 +40979,33 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/department/engine)
-"ctE" = (
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 8
-	},
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "cuG" = (
 /obj/structure/closet/crate{
 	icon_state = "crateopen"
 	},
 /turf/open/floor/plating,
 /area/maintenance/port)
+"cyh" = (
+/obj/structure/lattice/catwalk,
+/obj/machinery/button/door{
+	id = "mineshuttle";
+	name = "pod bay doors";
+	pixel_x = -26;
+	pixel_y = 4
+	},
+/turf/open/space/basic,
+/area/maintenance/ship_exterior)
 "czo" = (
 /obj/structure/disposalpipe/segment{
 	dir = 9
 	},
 /turf/open/floor/plating,
 /area/maintenance/starboard)
+"cAk" = (
+/obj/effect/spawner/structure/window/reinforced,
+/obj/machinery/door/firedoor,
+/turf/open/floor/plating,
+/area/quartermaster/miningdock)
 "cAn" = (
 /obj/structure/disposalpipe/segment,
 /obj/machinery/atmospherics/pipe/manifold/supply/hidden/layer1,
@@ -41043,15 +41067,6 @@
 /obj/machinery/atmospherics/pipe/layer_manifold,
 /turf/open/floor/engine,
 /area/science/mixing/chamber)
-"cPQ" = (
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 8
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "cPU" = (
 /obj/item/radio/intercom{
 	name = "intra ship intercom";
@@ -41059,12 +41074,6 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/science/nanite)
-"cRI" = (
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 5
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "cTt" = (
 /obj/effect/turf_decal/tile/neutral{
 	dir = 1
@@ -41161,18 +41170,6 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/hallway/nsv/deck2/frame1/central)
-"dEf" = (
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
-"dGv" = (
-/obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer3{
-	dir = 8
-	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "dHB" = (
 /obj/structure/extinguisher_cabinet{
 	pixel_y = 26
@@ -41198,20 +41195,6 @@
 /obj/machinery/airalarm/directional/south,
 /turf/open/floor/monotile,
 /area/security/brig)
-"dNS" = (
-/obj/structure/reagent_dispensers/fueltank/aviation_fuel,
-/obj/effect/turf_decal/delivery,
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
-"dRN" = (
-/obj/structure/cable{
-	icon_state = "4-8"
-	},
-/obj/machinery/door/airlock/ship/public/glass{
-	name = "Prison Sleepers"
-	},
-/turf/open/floor/monotile/dark,
-/area/security/prison)
 "dSD" = (
 /obj/machinery/door/airlock/ship/external/glass{
 	req_one_access_txt = "2"
@@ -41253,15 +41236,6 @@
 	},
 /turf/open/floor/monotile,
 /area/nsv/briefingroom)
-"eaM" = (
-/obj/machinery/button/door{
-	id = "mineshuttle";
-	name = "pod bay doors";
-	pixel_x = 4;
-	pixel_y = -26
-	},
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "ecN" = (
 /obj/structure/cable{
 	icon_state = "4-8"
@@ -41295,6 +41269,15 @@
 /area/crew_quarters/cafeteria{
 	name = "Mess hall"
 	})
+"egk" = (
+/obj/structure/cable{
+	icon_state = "2-4"
+	},
+/obj/machinery/computer/cryopod{
+	pixel_y = 32
+	},
+/turf/open/floor/monotile/dark,
+/area/security/prison)
 "emm" = (
 /obj/structure/grille,
 /obj/structure/window/reinforced{
@@ -41381,6 +41364,13 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/engine/engineering)
+"eyC" = (
+/obj/structure/disposalpipe/segment{
+	dir = 4
+	},
+/obj/structure/grille,
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "eDI" = (
 /obj/effect/turf_decal/tile/neutral,
 /obj/effect/turf_decal/tile/neutral{
@@ -41410,23 +41400,6 @@
 /obj/structure/grille,
 /turf/open/floor/plating,
 /area/maintenance/starboard/fore)
-"eFV" = (
-/obj/machinery/washing_machine,
-/obj/effect/turf_decal/tile/blue{
-	dir = 4
-	},
-/obj/effect/turf_decal/tile/blue{
-	dir = 8
-	},
-/obj/machinery/light{
-	dir = 4
-	},
-/obj/machinery/camera/autoname{
-	icon_state = "camera";
-	dir = 10
-	},
-/turf/open/floor/monotile/light,
-/area/security/prison)
 "eHZ" = (
 /obj/structure/chair/comfy/black{
 	dir = 4
@@ -41446,16 +41419,6 @@
 /obj/structure/bookcase,
 /turf/open/floor/wood,
 /area/library)
-"eNJ" = (
-/obj/machinery/computer/ship/viewscreen,
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
-"eOd" = (
-/obj/structure/disposalpipe/segment{
-	dir = 6
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "ePo" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
 	dir = 4
@@ -41463,6 +41426,14 @@
 /obj/machinery/atmospherics/pipe/manifold/scrubbers/hidden/layer3,
 /turf/open/floor/monotile/light,
 /area/medical/virology)
+"eQh" = (
+/obj/machinery/mineral/equipment_vendor,
+/obj/machinery/requests_console{
+	department = "Mining";
+	pixel_y = -30
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "eQZ" = (
 /obj/machinery/door/firedoor,
 /obj/machinery/door/airlock/ship/public/glass{
@@ -41503,13 +41474,12 @@
 /obj/item/stack/cable_coil,
 /turf/open/floor/monotile,
 /area/medical/chemistry)
-"eUc" = (
-/obj/machinery/newscaster{
-	pixel_x = 32
+"eUj" = (
+/obj/structure/cable{
+	icon_state = "1-8"
 	},
-/obj/structure/disposalpipe/segment,
 /turf/open/floor/monotile/dark,
-/area/hallway/secondary/exit/departure_lounge)
+/area/security/prison)
 "eUK" = (
 /obj/machinery/requests_console{
 	department = "Munitions bay";
@@ -41527,18 +41497,6 @@
 	},
 /turf/open/floor/plasteel/ship,
 /area/security/prison)
-"eXO" = (
-/obj/structure/disposalpipe/segment{
-	dir = 4
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
-"fbl" = (
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "fex" = (
 /obj/structure/punching_bag,
 /obj/machinery/light_switch{
@@ -41546,6 +41504,15 @@
 	},
 /turf/open/floor/monotile,
 /area/crew_quarters/fitness/recreation)
+"fim" = (
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 8
+	},
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "fjB" = (
 /obj/machinery/door/airlock/ship{
 	name = "Exothermic Chamber";
@@ -41593,6 +41560,12 @@
 /obj/structure/lattice,
 /turf/open/space,
 /area/science/mixing/chamber)
+"fDa" = (
+/obj/machinery/light{
+	dir = 4
+	},
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "fEj" = (
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3,
 /turf/closed/wall/r_wall/ship,
@@ -41646,16 +41619,6 @@
 /obj/effect/spawner/lootdrop/maintenance,
 /turf/open/floor/plating,
 /area/maintenance/port)
-"fTF" = (
-/obj/machinery/door/airlock/ship/maintenance/defaultaccess,
-/obj/structure/cable{
-	icon_state = "4-8"
-	},
-/obj/structure/disposalpipe/segment{
-	dir = 4
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "fVu" = (
 /obj/machinery/newscaster/security_unit{
 	pixel_y = -30
@@ -41778,19 +41741,6 @@
 /obj/machinery/status_display/evac,
 /turf/closed/wall/ship,
 /area/security/brig)
-"gPz" = (
-/obj/machinery/door/airlock/ship/external{
-	name = "Mining Shuttle Airlock";
-	req_one_access_txt = "31;48"
-	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 8
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "gUc" = (
 /obj/effect/turf_decal/stripes/line{
 	dir = 4
@@ -41877,10 +41827,6 @@
 /obj/structure/closet/emcloset,
 /turf/open/floor/plasteel/grid/steel,
 /area/nsv/hanger/deck2)
-"hcc" = (
-/obj/machinery/camera/autoname,
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "hdp" = (
 /obj/effect/turf_decal/tile/neutral{
 	dir = 1
@@ -41940,18 +41886,6 @@
 /obj/machinery/airalarm/directional/south,
 /turf/open/floor/monotile,
 /area/crew_quarters/heads/chief)
-"him" = (
-/obj/machinery/light{
-	dir = 1
-	},
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
-"hiY" = (
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 10
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "hjP" = (
 /obj/effect/spawner/structure/window/reinforced,
 /obj/machinery/door/firedoor,
@@ -42056,6 +41990,10 @@
 /obj/structure/closet/toolcloset,
 /turf/open/floor/plating,
 /area/nsv/briefingroom)
+"hSt" = (
+/obj/machinery/camera/autoname,
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "iey" = (
 /obj/structure/chair/comfy/shuttle{
 	dir = 4;
@@ -42118,15 +42056,6 @@
 /obj/machinery/door/firedoor,
 /turf/open/floor/plating,
 /area/crew_quarters/fitness/recreation)
-"iAa" = (
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 4
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "iCD" = (
 /obj/structure/closet/lasertag/blue,
 /obj/machinery/light,
@@ -42196,16 +42125,6 @@
 /obj/effect/mapping_helpers/airlock/cyclelink_helper,
 /turf/open/floor/plating,
 /area/maintenance/department/engine)
-"iSv" = (
-/obj/effect/spawner/structure/window/reinforced/ship,
-/turf/open/floor/plating,
-/area/quartermaster/miningdock)
-"iSx" = (
-/obj/machinery/atmospherics/components/unary/vent_pump/on/layer1{
-	dir = 8
-	},
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "iSM" = (
 /obj/effect/turf_decal/tile/purple{
 	dir = 4
@@ -42220,6 +42139,16 @@
 /obj/machinery/iv_drip,
 /turf/open/floor/monotile/dark,
 /area/gateway)
+"iVC" = (
+/obj/structure/cable{
+	icon_state = "4-8"
+	},
+/obj/machinery/cryopod{
+	dir = 8
+	},
+/obj/machinery/camera/autoname,
+/turf/open/floor/monotile/dark,
+/area/security/prison)
 "iVI" = (
 /obj/machinery/light,
 /turf/open/floor/monotile/dark,
@@ -42234,6 +42163,12 @@
 	},
 /turf/open/floor/carpet/ship,
 /area/quartermaster/storage)
+"iYg" = (
+/obj/machinery/atmospherics/components/unary/vent_pump/on/layer1{
+	dir = 8
+	},
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "iZE" = (
 /obj/structure/cable{
 	icon_state = "4-8"
@@ -42255,12 +42190,6 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/department/engine)
-"jcJ" = (
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 6
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "jeX" = (
 /obj/structure/window/reinforced/fulltile/ship,
 /obj/structure/grille,
@@ -42273,12 +42202,6 @@
 	},
 /turf/open/floor/plating,
 /area/security/prison)
-"jhB" = (
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 9
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "jiB" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1,
 /obj/machinery/atmospherics/pipe/manifold/scrubbers/hidden/layer3{
@@ -42337,15 +42260,6 @@
 "jmS" = (
 /turf/closed/wall/r_wall/ship,
 /area/maintenance/starboard)
-"jns" = (
-/obj/structure/cable{
-	icon_state = "2-4"
-	},
-/obj/machinery/computer/cryopod{
-	pixel_y = 32
-	},
-/turf/open/floor/monotile/dark,
-/area/security/prison)
 "jqz" = (
 /obj/effect/turf_decal/stripes/line{
 	dir = 4
@@ -42383,11 +42297,6 @@
 /obj/structure/disposalpipe/segment,
 /turf/open/floor/plating,
 /area/maintenance/port)
-"jyr" = (
-/obj/effect/spawner/structure/window/reinforced,
-/obj/machinery/door/firedoor,
-/turf/open/floor/plating,
-/area/quartermaster/miningdock)
 "jAE" = (
 /obj/effect/turf_decal/tile/yellow{
 	dir = 4
@@ -42546,10 +42455,6 @@
 	},
 /turf/open/floor/monotile,
 /area/crew_quarters/heads/chief)
-"kuG" = (
-/obj/effect/landmark/nuclear_waste_spawner,
-/turf/open/space/basic,
-/area/space)
 "kwF" = (
 /obj/effect/turf_decal/delivery,
 /obj/structure/overmap/fighter/light/prebuilt/flight_leader{
@@ -42601,6 +42506,15 @@
 	},
 /turf/open/floor/monotile,
 /area/medical/chemistry)
+"kJn" = (
+/obj/structure/cable{
+	icon_state = "4-8"
+	},
+/obj/machinery/door/airlock/ship/public/glass{
+	name = "Prison Sleepers"
+	},
+/turf/open/floor/monotile/dark,
+/area/security/prison)
 "kJA" = (
 /obj/structure/extinguisher_cabinet{
 	pixel_x = -27
@@ -42648,21 +42562,6 @@
 /obj/machinery/airalarm/directional/south,
 /turf/open/floor/monotile,
 /area/nsv/hanger/deck2)
-"kYf" = (
-/obj/structure/cable{
-	icon_state = "2-4"
-	},
-/obj/structure/disposalpipe/segment{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 6
-	},
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 6
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "kZu" = (
 /obj/machinery/portable_atmospherics/scrubber/huge,
 /obj/machinery/light{
@@ -42731,6 +42630,18 @@
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1,
 /turf/open/floor/plating,
 /area/maintenance/starboard/fore)
+"lkZ" = (
+/obj/structure/cable{
+	icon_state = "4-8"
+	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 8
+	},
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "ltR" = (
 /obj/machinery/status_display/ai,
 /turf/closed/wall/ship,
@@ -42778,6 +42689,13 @@
 /obj/machinery/atmospherics/pipe/layer_manifold,
 /turf/closed/wall/r_wall/ship,
 /area/science/xenobiology)
+"lDz" = (
+/obj/machinery/newscaster{
+	pixel_x = 32
+	},
+/obj/structure/disposalpipe/segment,
+/turf/open/floor/monotile/dark,
+/area/hallway/secondary/exit/departure_lounge)
 "lEy" = (
 /obj/effect/spawner/structure/window/reinforced,
 /obj/structure/cable{
@@ -42790,6 +42708,20 @@
 	},
 /turf/open/floor/plating,
 /area/crew_quarters/heads/hor)
+"lKv" = (
+/obj/effect/turf_decal/tile/red{
+	dir = 1
+	},
+/obj/effect/turf_decal/tile/red{
+	dir = 4
+	},
+/obj/machinery/vending/sustenance{
+	desc = "A vending machine normally reserved for work camps.";
+	name = "\improper sustenance vendor";
+	product_slogans = "Enjoy your meal.;Enough calories to support any worker."
+	},
+/turf/open/floor/monotile,
+/area/security/prison)
 "lKI" = (
 /obj/structure/bookcase{
 	name = "Forbidden Knowledge"
@@ -42817,12 +42749,6 @@
 /obj/item/ship_weapon/ammunition/missile,
 /turf/open/floor/plating,
 /area/nsv/hanger/deck2)
-"lPE" = (
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 9
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "lRd" = (
 /obj/structure/sink{
 	dir = 8;
@@ -42854,6 +42780,18 @@
 	},
 /turf/open/floor/monotile/light,
 /area/medical/medbay/lobby)
+"lWW" = (
+/obj/structure/cable{
+	icon_state = "1-8"
+	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 9
+	},
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 9
+	},
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "mbD" = (
 /obj/machinery/airalarm{
 	pixel_y = 23
@@ -42934,6 +42872,15 @@
 	},
 /turf/open/floor/plating,
 /area/engine/engineering/hangar)
+"mBS" = (
+/obj/machinery/button/door{
+	id = "mineshuttle";
+	name = "pod bay doors";
+	pixel_x = 4;
+	pixel_y = -26
+	},
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "mDA" = (
 /obj/effect/turf_decal/tile/red{
 	dir = 4
@@ -43038,6 +42985,10 @@
 	},
 /turf/open/floor/engine,
 /area/engine/atmospherics_engine)
+"ngP" = (
+/obj/effect/spawner/structure/window/reinforced/ship,
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "nqx" = (
 /obj/machinery/airalarm/mixingchamber{
 	dir = 4;
@@ -43053,15 +43004,18 @@
 /obj/machinery/atmospherics/pipe/layer_manifold,
 /turf/open/floor/engine,
 /area/science/mixing/chamber)
-"nrm" = (
+"ntI" = (
 /obj/structure/cable{
-	icon_state = "4-8"
+	icon_state = "2-4"
 	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+/obj/structure/disposalpipe/segment{
 	dir = 4
 	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 6
+	},
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 8
+	dir = 6
 	},
 /turf/open/floor/plating,
 /area/maintenance/department/cargo)
@@ -43170,12 +43124,24 @@
 	},
 /turf/open/floor/wood,
 /area/library)
+"nZY" = (
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 1
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "oaP" = (
 /obj/structure/disposalpipe/segment{
 	dir = 9
 	},
 /turf/open/floor/monotile,
 /area/nsv/weapons/fore)
+"oeE" = (
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 5
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "ohw" = (
 /obj/structure/extinguisher_cabinet{
 	pixel_x = 27
@@ -43220,6 +43186,12 @@
 /area/science/mixing{
 	name = "Prototype munitions bay"
 	})
+"ouH" = (
+/obj/structure/disposalpipe/segment{
+	dir = 4
+	},
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "oyf" = (
 /obj/effect/turf_decal/tile/neutral{
 	dir = 1
@@ -43242,6 +43214,11 @@
 /obj/structure/disposalpipe/segment,
 /turf/open/floor/monotile/dark,
 /area/nsv/hanger/deck2)
+"oBv" = (
+/obj/structure/table,
+/obj/machinery/computer/libraryconsole/bookmanagement,
+/turf/open/floor/monotile/dark,
+/area/security/prison)
 "oBT" = (
 /obj/structure/closet/crate{
 	icon_state = "crateopen"
@@ -43265,6 +43242,12 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/science/mixing/chamber)
+"oGc" = (
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 10
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "oHz" = (
 /obj/effect/turf_decal/tile/yellow{
 	dir = 1
@@ -43278,6 +43261,10 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/crew_quarters/fitness/recreation)
+"oIc" = (
+/obj/item/radio/intercom/directional/east,
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "oLv" = (
 /obj/item/ship_weapon/ammunition/gauss{
 	pixel_y = -4
@@ -43294,10 +43281,6 @@
 /area/maintenance/starboard/secondary{
 	name = "Gauss gun rack"
 	})
-"oML" = (
-/obj/structure/closet/crate,
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "oUM" = (
 /obj/structure/extinguisher_cabinet{
 	pixel_y = -27
@@ -43335,6 +43318,10 @@
 	},
 /turf/open/floor/carpet/ship,
 /area/quartermaster/qm)
+"phN" = (
+/obj/effect/landmark/nuclear_waste_spawner,
+/turf/open/space/basic,
+/area/space)
 "pjr" = (
 /obj/structure/displaycase/trophy,
 /obj/structure/sign/solgov_flag,
@@ -43366,6 +43353,16 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/starboard)
+"psq" = (
+/obj/structure/closet/secure_closet/miner,
+/obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer3{
+	dir = 4
+	},
+/obj/machinery/light{
+	dir = 8
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "psx" = (
 /obj/structure/disposalpipe/segment{
 	dir = 5
@@ -43492,6 +43489,12 @@
 	},
 /turf/open/floor/plasteel/grid/steel,
 /area/quartermaster/storage)
+"qkQ" = (
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 9
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "qmY" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1,
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3,
@@ -43501,16 +43504,6 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/nsv/briefingroom)
-"qnM" = (
-/obj/structure/cable{
-	icon_state = "4-8"
-	},
-/obj/machinery/cryopod{
-	dir = 8
-	},
-/obj/machinery/camera/autoname,
-/turf/open/floor/monotile/dark,
-/area/security/prison)
 "qnS" = (
 /obj/structure/cable{
 	icon_state = "1-2"
@@ -43536,6 +43529,12 @@
 	},
 /turf/open/floor/carpet/ship,
 /area/crew_quarters/dorms)
+"qwQ" = (
+/obj/machinery/light{
+	dir = 1
+	},
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "qxl" = (
 /obj/effect/turf_decal/stripes/white/corner{
 	dir = 1
@@ -43566,6 +43565,10 @@
 /obj/structure/reagent_dispensers/fueltank,
 /turf/open/floor/plating,
 /area/maintenance/department/engine)
+"qKU" = (
+/obj/effect/spawner/structure/window/reinforced/ship,
+/turf/open/floor/plating,
+/area/quartermaster/miningdock)
 "qLh" = (
 /obj/machinery/light/small{
 	dir = 4
@@ -43641,6 +43644,20 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/gateway)
+"qSL" = (
+/obj/effect/turf_decal/stripes/white/line,
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
+"qXg" = (
+/obj/machinery/door/airlock/ship/maintenance/defaultaccess,
+/obj/structure/cable{
+	icon_state = "4-8"
+	},
+/obj/structure/disposalpipe/segment{
+	dir = 4
+	},
+/turf/open/floor/plasteel/grid/steel,
+/area/maintenance/department/cargo)
 "qZd" = (
 /obj/structure/closet/emcloset,
 /turf/open/floor/plating,
@@ -43716,10 +43733,6 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/starboard/fore)
-"rvI" = (
-/obj/item/radio/intercom/directional/east,
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "rxn" = (
 /obj/machinery/door/airlock/ship/external/glass{
 	req_one_access_txt = "13"
@@ -43760,6 +43773,9 @@
 /area/science/mixing{
 	name = "Prototype munitions bay"
 	})
+"rJd" = (
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "rLI" = (
 /obj/effect/spawner/lootdrop/two_percent_xeno_egg_spawner,
 /turf/open/floor/engine,
@@ -43795,10 +43811,6 @@
 	},
 /turf/open/floor/monotile,
 /area/hallway/nsv/deck2/frame1/central)
-"sas" = (
-/obj/effect/turf_decal/stripes/white/line,
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "sax" = (
 /obj/structure/cable{
 	icon_state = "4-8"
@@ -43857,10 +43869,6 @@
 	},
 /turf/open/floor/monotile,
 /area/medical/chemistry)
-"shF" = (
-/obj/machinery/computer/arcade,
-/turf/open/floor/monotile/dark,
-/area/security/prison)
 "sjd" = (
 /obj/item/radio/intercom{
 	name = "intra ship intercom";
@@ -43928,40 +43936,11 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/starboard)
-"syR" = (
-/obj/structure/cable{
-	icon_state = "4-8"
-	},
-/obj/structure/disposalpipe/segment{
-	dir = 9
-	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 8
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "sBR" = (
 /obj/machinery/camera/autoname,
 /obj/machinery/vending/games,
 /turf/open/floor/wood,
 /area/library)
-"sCl" = (
-/obj/effect/turf_decal/tile/red{
-	dir = 1
-	},
-/obj/effect/turf_decal/tile/red{
-	dir = 4
-	},
-/obj/machinery/vending/sustenance{
-	desc = "A vending machine normally reserved for work camps.";
-	name = "\improper sustenance vendor";
-	product_slogans = "Enjoy your meal.;Enough calories to support any worker."
-	},
-/turf/open/floor/monotile,
-/area/security/prison)
 "sCC" = (
 /obj/structure/extinguisher_cabinet{
 	pixel_x = -27
@@ -43988,19 +43967,13 @@
 /obj/effect/spawner/lootdrop/maintenance,
 /turf/open/floor/plating,
 /area/maintenance/port)
-"sSP" = (
-/obj/structure/closet/secure_closet/miner,
+"sXh" = (
 /obj/machinery/atmospherics/components/unary/vent_scrubber/on/layer3{
-	dir = 4
-	},
-/obj/machinery/light{
 	dir = 8
 	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
-"sUi" = (
-/obj/effect/turf_decal/delivery,
-/obj/structure/reagent_dispensers/fueltank,
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
 /turf/open/floor/monotile,
 /area/quartermaster/miningdock)
 "sYQ" = (
@@ -44032,8 +44005,10 @@
 /obj/structure/disposalpipe/segment,
 /turf/open/floor/plasteel/grid/steel,
 /area/nsv/hanger/deck2)
-"tgH" = (
-/obj/effect/spawner/structure/window/reinforced/ship,
+"tia" = (
+/obj/structure/disposalpipe/segment{
+	dir = 6
+	},
 /turf/open/floor/plating,
 /area/maintenance/department/cargo)
 "tiu" = (
@@ -44065,6 +44040,10 @@
 /obj/structure/table/wood,
 /turf/open/floor/carpet,
 /area/library)
+"tnk" = (
+/obj/structure/closet/crate,
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "tnm" = (
 /obj/effect/turf_decal/tile/yellow{
 	dir = 1
@@ -44090,6 +44069,12 @@
 /obj/machinery/status_display/evac,
 /turf/closed/wall/ship,
 /area/engine/break_room)
+"txx" = (
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 6
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "txH" = (
 /obj/machinery/holopad,
 /turf/open/floor/carpet/blue,
@@ -44099,6 +44084,13 @@
 /obj/structure/bookcase/manuals/research_and_development,
 /turf/open/floor/wood,
 /area/library)
+"tCe" = (
+/obj/structure/closet/secure_closet/miner,
+/obj/machinery/atmospherics/components/unary/vent_pump/on/layer1{
+	dir = 4
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "tDB" = (
 /obj/machinery/sleeper{
 	dir = 4
@@ -44188,6 +44180,11 @@
 	},
 /turf/open/floor/monotile,
 /area/crew_quarters/fitness/recreation)
+"ufx" = (
+/obj/structure/reagent_dispensers/fueltank/aviation_fuel,
+/obj/effect/turf_decal/delivery,
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "ufF" = (
 /turf/closed/wall/r_wall/ship,
 /area/science/mixing/chamber)
@@ -44206,17 +44203,20 @@
 	},
 /turf/open/floor/carpet,
 /area/library)
-"umv" = (
-/obj/structure/disposalpipe/segment{
-	dir = 4
+"umt" = (
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 9
 	},
-/obj/structure/grille,
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "uqx" = (
 /obj/structure/reagent_dispensers/watertank,
 /turf/open/floor/plating,
 /area/maintenance/department/medical)
+"urA" = (
+/obj/machinery/computer/arcade,
+/turf/open/floor/monotile/dark,
+/area/security/prison)
 "uts" = (
 /obj/machinery/atmospherics/pipe/simple/dark/visible,
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3,
@@ -44244,6 +44244,12 @@
 	},
 /turf/open/floor/monotile,
 /area/security/brig)
+"uBC" = (
+/obj/machinery/door/poddoor/ship{
+	id = "mineshuttle"
+	},
+/turf/open/floor/plating,
+/area/quartermaster/miningdock)
 "uDe" = (
 /obj/effect/spawner/lootdrop/maintenance,
 /obj/structure/closet/crate{
@@ -44262,6 +44268,23 @@
 /obj/machinery/portable_atmospherics/canister,
 /turf/open/floor/monotile/dark,
 /area/engine/atmospherics_engine)
+"uJW" = (
+/obj/machinery/washing_machine,
+/obj/effect/turf_decal/tile/blue{
+	dir = 4
+	},
+/obj/effect/turf_decal/tile/blue{
+	dir = 8
+	},
+/obj/machinery/light{
+	dir = 4
+	},
+/obj/machinery/camera/autoname{
+	icon_state = "camera";
+	dir = 10
+	},
+/turf/open/floor/monotile/light,
+/area/security/prison)
 "uMm" = (
 /obj/structure/extinguisher_cabinet{
 	pixel_x = 27
@@ -44281,6 +44304,12 @@
 /obj/effect/spawner/lootdrop/maintenance,
 /turf/open/floor/plating,
 /area/maintenance/starboard/fore)
+"uPv" = (
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "uQh" = (
 /obj/structure/disposalpipe/segment,
 /obj/machinery/status_display/ai{
@@ -44305,13 +44334,6 @@
 	},
 /turf/open/floor/monotile/light,
 /area/medical/medbay/lobby)
-"vby" = (
-/obj/structure/closet/secure_closet/miner,
-/obj/machinery/atmospherics/components/unary/vent_pump/on/layer1{
-	dir = 4
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "vew" = (
 /obj/structure/bed{
 	layer = 2.8
@@ -44373,6 +44395,9 @@
 /area/science/mixing{
 	name = "Prototype munitions bay"
 	})
+"vnC" = (
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "vpr" = (
 /obj/structure/disposalpipe/segment{
 	dir = 9
@@ -44385,6 +44410,15 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/starboard/fore)
+"vqj" = (
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 8
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
 "vtl" = (
 /obj/machinery/light,
 /turf/open/floor/monotile,
@@ -44395,22 +44429,6 @@
 	},
 /turf/open/floor/wood,
 /area/library)
-"vwa" = (
-/obj/machinery/door/airlock/ship/maintenance/defaultaccess,
-/obj/structure/cable{
-	icon_state = "4-8"
-	},
-/obj/structure/disposalpipe/segment{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 4
-	},
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 8
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "vAg" = (
 /obj/machinery/atmospherics/pipe/manifold/supply/hidden/layer1{
 	dir = 8
@@ -44458,22 +44476,6 @@
 	},
 /turf/open/floor/plating,
 /area/maintenance/starboard/fore)
-"wdI" = (
-/obj/machinery/door/poddoor/ship{
-	id = "mineshuttle"
-	},
-/turf/open/floor/plating,
-/area/quartermaster/miningdock)
-"weh" = (
-/obj/structure/lattice/catwalk,
-/obj/machinery/button/door{
-	id = "mineshuttle";
-	name = "pod bay doors";
-	pixel_x = -26;
-	pixel_y = 4
-	},
-/turf/open/space/basic,
-/area/maintenance/ship_exterior)
 "weE" = (
 /obj/structure/closet/secure_closet/brig,
 /obj/machinery/firealarm{
@@ -44516,6 +44518,20 @@
 	},
 /turf/open/floor/engine/vacuum,
 /area/engine/atmospherics_engine)
+"wrc" = (
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/effect/turf_decal/stripes/white/line{
+	dir = 4
+	},
+/turf/open/floor/monotile/dark,
+/area/quartermaster/miningdock)
+"wrY" = (
+/obj/effect/turf_decal/delivery,
+/obj/structure/reagent_dispensers/fueltank,
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "wss" = (
 /obj/machinery/atmospherics/components/unary/vent_pump/on/layer1{
 	dir = 1
@@ -44571,6 +44587,10 @@
 	},
 /turf/open/floor/monotile,
 /area/science/mixing/chamber)
+"wFw" = (
+/obj/machinery/computer/ship/viewscreen,
+/turf/open/floor/monotile,
+/area/quartermaster/miningdock)
 "wId" = (
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
 	dir = 6
@@ -44697,6 +44717,22 @@
 /obj/structure/table/wood,
 /turf/open/floor/carpet,
 /area/library)
+"xqG" = (
+/obj/machinery/door/airlock/ship/maintenance/defaultaccess,
+/obj/structure/cable{
+	icon_state = "4-8"
+	},
+/obj/structure/disposalpipe/segment{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 8
+	},
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "xqR" = (
 /obj/structure/cable{
 	icon_state = "1-4"
@@ -44716,11 +44752,6 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/nsv/briefingroom)
-"xtL" = (
-/obj/structure/table,
-/obj/machinery/computer/libraryconsole/bookmanagement,
-/turf/open/floor/monotile/dark,
-/area/security/prison)
 "xui" = (
 /obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1,
 /obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3,
@@ -44734,12 +44765,6 @@
 /area/science/mixing{
 	name = "Prototype munitions bay"
 	})
-"xAu" = (
-/obj/machinery/light{
-	dir = 4
-	},
-/turf/open/floor/monotile,
-/area/quartermaster/miningdock)
 "xDQ" = (
 /obj/machinery/door/poddoor/incinerator_toxmix,
 /turf/open/floor/plating/airless,
@@ -44778,18 +44803,6 @@
 	},
 /turf/open/floor/wood,
 /area/library)
-"xKk" = (
-/obj/structure/cable{
-	icon_state = "1-8"
-	},
-/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
-	dir = 9
-	},
-/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
-	dir = 9
-	},
-/turf/open/floor/plating,
-/area/maintenance/department/cargo)
 "xMG" = (
 /obj/effect/turf_decal/tile/green{
 	dir = 1
@@ -44805,17 +44818,6 @@
 	},
 /turf/open/floor/monotile,
 /area/hallway/nsv/deck2/frame1/port)
-"xNv" = (
-/obj/structure/closet/secure_closet/miner,
-/obj/item/radio/intercom{
-	name = "intra ship intercom";
-	pixel_x = -26
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
-"xOf" = (
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
 "xOP" = (
 /obj/machinery/atmospherics/components/unary/portables_connector/visible{
 	dir = 1
@@ -44834,6 +44836,21 @@
 	},
 /turf/open/floor/plasteel/ship,
 /area/security/prison)
+"xRc" = (
+/obj/structure/cable{
+	icon_state = "4-8"
+	},
+/obj/structure/disposalpipe/segment{
+	dir = 9
+	},
+/obj/machinery/atmospherics/pipe/simple/supply/hidden/layer1{
+	dir = 4
+	},
+/obj/machinery/atmospherics/pipe/simple/scrubbers/hidden/layer3{
+	dir = 8
+	},
+/turf/open/floor/plating,
+/area/maintenance/department/cargo)
 "xVu" = (
 /obj/structure/cable{
 	icon_state = "1-2"
@@ -44878,26 +44895,6 @@
 	},
 /turf/open/floor/monotile/dark,
 /area/science)
-"xYV" = (
-/obj/machinery/mineral/equipment_vendor,
-/obj/machinery/requests_console{
-	department = "Mining";
-	pixel_y = -30
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
-"yau" = (
-/obj/effect/turf_decal/stripes/white/line{
-	dir = 1
-	},
-/turf/open/floor/monotile/dark,
-/area/quartermaster/miningdock)
-"ydw" = (
-/obj/structure/cable{
-	icon_state = "1-8"
-	},
-/turf/open/floor/monotile/dark,
-/area/security/prison)
 "yea" = (
 /obj/structure/disposalpipe/segment{
 	dir = 10
@@ -61401,12 +61398,12 @@ aFA
 aFA
 aFA
 aIj
-xtL
-shF
+oBv
+urA
 bEW
 aFw
 bEW
-sCl
+lKv
 aFA
 anb
 aaa
@@ -61705,7 +61702,7 @@ aFA
 bgt
 aFA
 aFA
-dRN
+kJn
 aFA
 bEW
 bib
@@ -62006,11 +62003,11 @@ aGg
 aHg
 aFo
 aFA
-jns
-ydw
+egk
+eUj
 aFA
 bFp
-eFV
+uJW
 jeX
 anb
 aaa
@@ -62308,7 +62305,7 @@ aGz
 aFA
 aIk
 aFA
-qnM
+iVC
 aYb
 aFA
 aYf
@@ -86491,7 +86488,7 @@ aci
 afo
 sax
 bjD
-eUc
+lDz
 bDO
 aNN
 bjE
@@ -86791,7 +86788,7 @@ aOu
 bfK
 aci
 aem
-fTF
+qXg
 aem
 aOA
 aOA
@@ -87097,10 +87094,10 @@ aOF
 cDF
 aOA
 bny
-vby
-xNv
-sSP
-xYV
+tCe
+bZc
+psq
+eQh
 bID
 aaJ
 aaJ
@@ -87401,9 +87398,9 @@ bJz
 bJA
 bJB
 blj
-lPE
-xOf
-iSv
+umt
+rJd
+qKU
 aaJ
 aaJ
 aaa
@@ -87705,7 +87702,7 @@ bJC
 bJD
 bJC
 bJC
-iSv
+qKU
 aaJ
 aaJ
 aaa
@@ -87999,14 +87996,14 @@ bqB
 iYd
 aci
 aih
-vwa
+xqG
 aih
 bID
-jyr
-jyr
-gPz
-jyr
-jyr
+cAk
+cAk
+clT
+cAk
+cAk
 bID
 aaJ
 aaJ
@@ -88300,15 +88297,15 @@ bqe
 bqc
 lzn
 aci
-eOd
-syR
+tia
+xRc
 aim
 bID
-him
-dEf
-ctE
-dEf
-eaM
+qwQ
+vnC
+fim
+vnC
+mBS
 bID
 bID
 aaJ
@@ -88602,17 +88599,17 @@ bqe
 bqc
 bqT
 aci
-eXO
-nrm
+ouH
+lkZ
 aim
 bDM
-dEf
-dEf
-dGv
-dEf
-dEf
-wdI
-weh
+vnC
+vnC
+sXh
+vnC
+vnC
+uBC
+cyh
 anb
 aAy
 aAy
@@ -88904,16 +88901,16 @@ bqe
 bqc
 bqU
 aci
-eXO
-nrm
-oML
+ouH
+lkZ
+tnk
 bID
-dEf
-jcJ
-cPQ
-cRI
-dEf
-wdI
+vnC
+txx
+vqj
+oeE
+vnC
+uBC
 aAy
 anb
 anb
@@ -89206,16 +89203,16 @@ brb
 bnO
 bqV
 aci
-eXO
-nrm
-oML
+ouH
+lkZ
+tnk
 bID
-eNJ
-yau
-fbl
-sas
-dEf
-wdI
+wFw
+nZY
+uPv
+qSL
+vnC
+uBC
 aAy
 aAy
 avw
@@ -89508,16 +89505,16 @@ bqh
 pxy
 ajs
 aci
-eXO
-nrm
+ouH
+lkZ
 aim
 bID
-hcc
-hiY
-iAa
-jhB
-dEf
-wdI
+hSt
+oGc
+wrc
+qkQ
+vnC
+uBC
 aAy
 anb
 anb
@@ -89810,16 +89807,16 @@ bqi
 bqC
 ajs
 atf
-umv
-nrm
+eyC
+lkZ
 atf
 bID
-dEf
-dEf
-iSx
-dEf
-dEf
-wdI
+vnC
+vnC
+iYg
+vnC
+vnC
+uBC
 aAy
 anb
 aAy
@@ -90112,15 +90109,15 @@ aka
 bHN
 ajs
 aim
-eXO
-nrm
+ouH
+lkZ
 aim
 bID
-dNS
-dEf
-rvI
-xAu
-sUi
+ufx
+vnC
+oIc
+fDa
+wrY
 bID
 bID
 aaJ
@@ -90414,8 +90411,8 @@ aka
 eJW
 ajs
 aim
-eXO
-nrm
+ouH
+lkZ
 aim
 bID
 bID
@@ -90716,8 +90713,8 @@ aOr
 phM
 ajs
 atf
-umv
-nrm
+eyC
+lkZ
 atf
 aij
 aaJ
@@ -91018,8 +91015,8 @@ aka
 aka
 ajs
 aim
-kYf
-xKk
+ntI
+lWW
 aim
 aij
 aaJ
@@ -91326,9 +91323,9 @@ aih
 aij
 aij
 aij
-tgH
-tgH
-tgH
+ngP
+ngP
+ngP
 aij
 aij
 aij
@@ -94045,7 +94042,7 @@ aYF
 oyi
 aaa
 aaa
-kuG
+phN
 aaa
 aaa
 aaa
