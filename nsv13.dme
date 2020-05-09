@@ -14,7 +14,6 @@
 
 // BEGIN_INCLUDE
 #include "_maps\_basemap.dm"
-#include "_maps\enterprise.dm"
 #include "code\_compile_options.dm"
 #include "code\world.dm"
 #include "code\__DEFINES\_globals.dm"
@@ -304,7 +303,6 @@
 #include "code\datums\beam.dm"
 #include "code\datums\browser.dm"
 #include "code\datums\callback.dm"
-#include "code\datums\chatmessage.dm"
 #include "code\datums\cinematic.dm"
 #include "code\datums\dash_weapon.dm"
 #include "code\datums\datacore.dm"
@@ -3037,6 +3035,7 @@
 #include "nsv13\code\__HELPERS\names.dm"
 #include "nsv13\code\__HELPERS\priority_announce.dm"
 #include "nsv13\code\_DEFINES\components.dm"
+#include "nsv13\code\_DEFINES\medal.dm"
 #include "nsv13\code\_DEFINES\research.dm"
 #include "nsv13\code\_HELPERS\maths.dm"
 #include "nsv13\code\_HELPERS\matrices.dm"
@@ -3141,6 +3140,7 @@
 #include "nsv13\code\modules\overmap\fighters\tug.dm"
 #include "nsv13\code\modules\overmap\fighters\utility.dm"
 #include "nsv13\code\modules\overmap\fighters\utility_build.dm"
+#include "nsv13\code\modules\overmap\fighters\modules\ftl_drive.dm"
 #include "nsv13\code\modules\power\lighting.dm"
 #include "nsv13\code\modules\power\stormdrive.dm"
 #include "nsv13\code\modules\projectiles\overmap.dm"
