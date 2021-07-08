@@ -101,7 +101,7 @@ SUBSYSTEM_DEF(ticker)
 					continue
 				music += S
 
-	var/old_login_music = trim(file2text("data/last_round_lobby_music.txt"))
+	var/old_login_music = trim(rustg_file_read("data/last_round_lobby_music.txt"))
 	if(music.len > 1)
 		music -= old_login_music
 
@@ -113,7 +113,7 @@ SUBSYSTEM_DEF(ticker)
 				continue
 		music -= S
 
-	if(isemptylist(music))
+	if(!length(music))
 		music = world.file2list(ROUND_START_MUSIC_LIST, "\n")
 		login_music = pick(music)
 	else
@@ -215,7 +215,7 @@ SUBSYSTEM_DEF(ticker)
 
 
 /datum/controller/subsystem/ticker/proc/setup()
-	to_chat(world, "<span class='boldannounce'>Starting game...</span>")
+	message_admins("Setting up game.")
 	var/init_start = world.timeofday
 		//Create and announce mode
 	var/list/datum/game_mode/runnable_modes
@@ -253,9 +253,10 @@ SUBSYSTEM_DEF(ticker)
 	var/can_continue = 0
 	can_continue = src.mode.pre_setup()		//Choose antagonists
 	CHECK_TICK
-	can_continue = can_continue && SSjob.DivideOccupations() 				//Distribute jobs
+	can_continue = can_continue && SSjob.DivideOccupations(mode.required_jobs) 				//Distribute jobs
 	CHECK_TICK
 
+	to_chat(world, "<span class='boldannounce'>Starting game...</span>")
 	if(!GLOB.Debug2)
 		if(!can_continue)
 			log_game("[mode.name] failed pre_setup, cause: [mode.setup_error]")
@@ -311,6 +312,7 @@ SUBSYSTEM_DEF(ticker)
 			to_chat(world, "<h4>[holiday.greet()]</h4>")
 
 	PostSetup()
+	SSstat.clear_global_alert()
 
 	return TRUE
 
@@ -349,10 +351,11 @@ SUBSYSTEM_DEF(ticker)
 
 /datum/controller/subsystem/ticker/proc/station_explosion_detonation(atom/bomb)
 	if(bomb)	//BOOM
-		var/turf/epi = bomb.loc
 		qdel(bomb)
-		if(epi)
-			explosion(epi, 0, 256, 512, 0, TRUE, TRUE, 0, TRUE)
+		for(var/mob/M in GLOB.mob_list)
+			var/turf/T = get_turf(M)
+			if(T && is_station_level(T.z) && !istype(M.loc, /obj/structure/closet/secure_closet/freezer)) //protip: freezers protect you from nukes
+				M.gib(TRUE)
 
 /datum/controller/subsystem/ticker/proc/create_characters()
 	for(var/mob/dead/new_player/player in GLOB.player_list)
@@ -371,22 +374,43 @@ SUBSYSTEM_DEF(ticker)
 
 
 /datum/controller/subsystem/ticker/proc/equip_characters()
-	var/captainless=1
+	var/captainless = TRUE
+	var/list/spare_id_candidates = list()
+	var/highest_rank = length(SSjob.chain_of_command) + 1
+	var/enforce_coc = CONFIG_GET(flag/spare_enforce_coc)
+
 	for(var/mob/dead/new_player/N in GLOB.player_list)
 		var/mob/living/carbon/human/player = N.new_character
 		if(istype(player) && player.mind && player.mind.assigned_role)
 			if(player.mind.assigned_role == "Captain")
-				captainless=0
+				captainless = FALSE
+				spare_id_candidates += N
+			else if(captainless && (player.mind.assigned_role in GLOB.command_positions) && !(is_banned_from(N.ckey, "Captain")))
+				if(!enforce_coc)
+					spare_id_candidates += N
+				else
+					var/spare_id_priority = SSjob.chain_of_command[player.mind.assigned_role]
+					if(spare_id_priority)
+						if(spare_id_priority < highest_rank)
+							spare_id_candidates.Cut()
+							spare_id_candidates += N
+							highest_rank = spare_id_priority
+						else if(spare_id_priority == highest_rank)
+							spare_id_candidates += N
 			if(player.mind.assigned_role != player.mind.special_role)
-				SSjob.EquipRank(N, player.mind.assigned_role, 0)
+				SSjob.EquipRank(N, player.mind.assigned_role, FALSE)
 			if(CONFIG_GET(flag/roundstart_traits) && ishuman(N.new_character))
 				SSquirks.AssignQuirks(N.new_character, N.client, TRUE)
 		CHECK_TICK
-	if(captainless)
-		for(var/mob/dead/new_player/N in GLOB.player_list)
-			if(N.new_character)
-				to_chat(N, "Captainship not forced on anyone.")
-			CHECK_TICK
+	if(length(spare_id_candidates))			//No captain, time to choose acting captain
+		if(!enforce_coc)
+			for(var/mob/dead/new_player/player in spare_id_candidates)
+				SSjob.promote_to_captain(player, captainless)
+
+		else
+			SSjob.promote_to_captain(pick(spare_id_candidates), captainless)		//This is just in case 2 heads of the same priority spawn
+		CHECK_TICK
+
 
 /datum/controller/subsystem/ticker/proc/transfer_characters()
 	var/list/livings = list()
@@ -396,7 +420,7 @@ SUBSYSTEM_DEF(ticker)
 			qdel(player)
 			living.notransform = TRUE
 			if(living.client)
-				var/obj/screen/splash/S = new(living.client, TRUE)
+				var/atom/movable/screen/splash/S = new(living.client, TRUE)
 				S.Fade(TRUE)
 			livings += living
 	if(livings.len)
@@ -550,7 +574,7 @@ SUBSYSTEM_DEF(ticker)
 		if(WIZARD_KILLED)
 			news_message = "Tensions have flared with the Space Wizard Federation following the death of one of their members aboard [station_name()]."
 		if(STATION_NUKED)
-			news_message = "[station_name()] activated its self destruct device for unknown reasons. Attempts to clone the Captain so he can be arrested and executed are underway."
+			news_message = "[station_name()] activated its self-destruct device for unknown reasons. Attempts to clone the Captain so he can be arrested and executed are underway."
 		if(CLOCK_SUMMON)
 			news_message = "The garbled messages about hailing a mouse and strange energy readings from [station_name()] have been discovered to be an ill-advised, if thorough, prank by a clown."
 		if(CLOCK_SILICONS)
@@ -559,9 +583,15 @@ SUBSYSTEM_DEF(ticker)
 			news_message = "The burst of energy released near [station_name()] has been confirmed as merely a test of a new weapon. However, due to an unexpected mechanical error, their communications system has been knocked offline."
 		if(SHUTTLE_HIJACK)
 			news_message = "During routine evacuation procedures, the emergency shuttle of [station_name()] had its navigation protocols corrupted and went off course, but was recovered shortly after."
+		if(PVP_SYNDIE_WIN)
+			news_message = "The crew of [station_name()] have been cloned and subsequently court-martialled after losing a border skirmish to the SSV Nebuchadnezzar and her crew. VICKER media would like to remind all employees to do better than that crew!"
+		if(PVP_SYNDIE_LOSS)
+			news_message = "The crew of [station_name()] successfully repelled an attempted invasion by the SSV Nebuchadnezzar and have strengthened Nanotrasen's position in the Sol sector!"
+		if(PVP_SYNDIE_PIRATE_WIN)
+			news_message = "The sol sector has fallen into anarchistic piracy, as the Tortuga raiders used the chaos of a surprise attack by Syndicate forces to seize a large amount of territory unanswered."
 
 	if(news_message)
-		send2otherserver(news_source, news_message,"News_Report")
+		comms_send(news_source, news_message, "News_Report", CONFIG_GET(flag/insecure_newscaster))
 
 /datum/controller/subsystem/ticker/proc/GetTimeLeft()
 	if(isnull(SSticker.timeLeft))
@@ -582,17 +612,17 @@ SUBSYSTEM_DEF(ticker)
 			addtimer(CALLBACK(player, /mob/dead/new_player.proc/make_me_an_observer), 1)
 
 /datum/controller/subsystem/ticker/proc/load_mode()
-	var/mode = trim(file2text("data/mode.txt"))
+	var/mode = CONFIG_GET(string/master_mode)
 	if(mode)
 		GLOB.master_mode = mode
 	else
 		GLOB.master_mode = "extended"
-	log_game("Saved mode is '[GLOB.master_mode]'")
+	log_game("Master mode is '[GLOB.master_mode]'")
+	log_config("Master mode is '[GLOB.master_mode]'")
 
-/datum/controller/subsystem/ticker/proc/save_mode(the_mode)
-	var/F = file("data/mode.txt")
-	fdel(F)
-	WRITE_FILE(F, the_mode)
+/// Returns if either the master mode or the forced secret ruleset matches the mode name.
+/datum/controller/subsystem/ticker/proc/is_mode(mode_name)
+	return GLOB.master_mode == mode_name || GLOB.secret_force_mode == mode_name
 
 /datum/controller/subsystem/ticker/proc/SetRoundEndSound(the_sound)
 	set waitfor = FALSE
@@ -646,17 +676,9 @@ SUBSYSTEM_DEF(ticker)
 	save_admin_data()
 	update_everything_flag_in_db()
 	if(!round_end_sound)
-		round_end_sound = pick(\
-		'sound/roundend/newroundsexy.ogg',
-		'sound/roundend/apcdestroyed.ogg',
-		'sound/roundend/bangindonk.ogg',
-		'sound/roundend/leavingtg.ogg',
-		'sound/roundend/its_only_game.ogg',
-		'sound/roundend/yeehaw.ogg',
-		'sound/roundend/disappointed.ogg',
-		'sound/roundend/scrunglartiy.ogg',
-		'sound/roundend/whyban.ogg'\
-		)
+		var/list/tracks = flist("sound/roundend/")
+		if(tracks.len)
+			round_end_sound = "sound/roundend/[pick(tracks)]"
 
 	SEND_SOUND(world, sound(round_end_sound))
-	text2file(login_music, "data/last_round_lobby_music.txt")
+	rustg_file_append(login_music, "data/last_round_lobby_music.txt")

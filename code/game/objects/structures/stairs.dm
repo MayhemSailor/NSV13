@@ -2,14 +2,17 @@
 #define STAIR_TERMINATOR_NO 1
 #define STAIR_TERMINATOR_YES 2
 
+// dir determines the direction of travel to go upwards (due to lack of sprites, currently only 1 and 2 make sense)
+// stairs require /turf/open/openspace as the tile above them to work
+// multiple stair objects can be chained together; the Z level transition will happen on the final stair object in the chain
+
 /obj/structure/stairs
 	name = "stairs"
 	icon = 'icons/obj/stairs.dmi'
 	icon_state = "stairs"
 	anchored = TRUE
-	//dir = direction of travel to go upwards
 
-	var/force_open_above = FALSE
+	var/force_open_above = FALSE // replaces the turf above this stair obj with /turf/open/openspace
 	var/terminator_mode = STAIR_TERMINATOR_AUTOMATIC
 	var/turf/listeningTo
 
@@ -42,12 +45,15 @@
 	if(!newloc || !AM)
 		return ..()
 	if(!isobserver(AM) && isTerminator() && (get_dir(src, newloc) == dir))
-		stair_ascend(AM)
-		return FALSE
+		var/turf/target = get_step_multiz(get_turf(src), (dir|UP))
+		if(target == newloc) // Slightly jank, but this gets called twice mecause we move upwards out of the stair tile
+			return TRUE
+		stair_ascend(AM, target)
+		return FALSE // We don't want to cross onto the turf on the same Z as the stairs
 	return ..()
 
 /obj/structure/stairs/Cross(atom/movable/AM)
-	if(isTerminator() && (get_dir(src, AM) == dir))
+	if(isTerminator() && (get_dir(src, AM) == dir) && (AM.z <= z))
 		return FALSE
 	return ..()
 
@@ -57,23 +63,16 @@
 	else
 		icon_state = "stairs"
 
-/obj/structure/stairs/proc/stair_ascend(atom/movable/AM)
+/obj/structure/stairs/proc/stair_ascend(atom/movable/AM, turf/newloc)
 	var/turf/checking = get_step_multiz(get_turf(src), UP)
 	if(!istype(checking))
-		return
+		return FALSE
 	if(!checking.zPassIn(AM, UP, get_turf(src)))
-		return
-	var/turf/target = get_step_multiz(get_turf(src), (dir|UP))
-	if(istype(target) && !target.can_zFall(AM, null, get_step_multiz(target, DOWN)))			//Don't throw them into a tile that will just dump them back down.
-		if(isliving(AM))
-			var/mob/living/L = AM
-			var/pulling = L.pulling
-			if(pulling)
-				L.pulling.forceMove(target)
-			L.forceMove(target)
-			L.start_pulling(pulling)
-		else
-			AM.forceMove(target)
+		return FALSE
+	if(istype(newloc) && !newloc.can_zFall(AM, null, get_step_multiz(newloc, DOWN)))			//Don't throw them into a tile that will just dump them back down.
+		return AM.Move(newloc) || AM.forceMove(newloc)
+	return FALSE
+
 
 /obj/structure/stairs/vv_edit_var(var_name, var_value)
 	. = ..()
@@ -99,13 +98,13 @@
 /obj/structure/stairs/proc/force_open_above()
 	var/turf/open/openspace/T = get_step_multiz(get_turf(src), UP)
 	if(T && !istype(T))
-		T.ChangeTurf(/turf/open/openspace)
+		T.ChangeTurf(/turf/open/openspace, flags = CHANGETURF_INHERIT_AIR)
 
 /obj/structure/stairs/proc/on_multiz_new(turf/source, dir)
 	if(dir == UP)
 		var/turf/open/openspace/T = get_step_multiz(get_turf(src), UP)
 		if(T && !istype(T))
-			T.ChangeTurf(/turf/open/openspace)
+			T.ChangeTurf(/turf/open/openspace, flags = CHANGETURF_INHERIT_AIR)
 
 /obj/structure/stairs/intercept_zImpact(atom/movable/AM, levels = 1)
 	. = ..()

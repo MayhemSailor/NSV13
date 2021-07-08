@@ -6,7 +6,7 @@
 	summon_type = list(/obj/effect/forcefield/mime)
 	invocation_type = "emote"
 	invocation_emote_self = "<span class='notice'>You form a wall in front of yourself.</span>"
-	summon_lifespan = 300
+	summon_lifespan = 100
 	charge_max = 300
 	clothes_req = FALSE
 	antimagic_allowed = TRUE
@@ -74,7 +74,7 @@
 	summon_type = list(/obj/item/storage/box/mime)
 	invocation_type = "emote"
 	invocation_emote_self = "<span class='notice'>You conjure up an invisible box, large enough to store a few things.</span>"
-	summon_lifespan = 250
+	summon_lifespan = 500
 	charge_max = 300
 	clothes_req = FALSE
 	antimagic_allowed = TRUE

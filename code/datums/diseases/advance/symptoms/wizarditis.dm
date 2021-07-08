@@ -6,13 +6,20 @@
 	stage_speed = -3
 	transmittable = -1
 	level = 0
-	severity = 3
+	severity = 0
 	symptom_delay_min = 15
 	symptom_delay_max = 45
 	var/teleport = FALSE
 	var/robes = FALSE
 	threshold_desc = "<b>Transmission 14:</b> The host teleports occasionally.<br>\
 					  <b>Speed 7:</b> The host grows a set of wizard robes."
+
+/datum/symptom/wizarditis/severityset(datum/disease/advance/A)
+	. = ..()
+	if(A.properties["transmittable"] >= 12)
+		severity += 1
+	if(A.properties["speed"] >= 7)
+		severity += 1
 
 /datum/symptom/wizarditis/Start(datum/disease/advance/A)
 	if(!..())
@@ -64,7 +71,7 @@
 					qdel(H.head)
 				C = new /obj/item/clothing/head/wizard(H)
 				ADD_TRAIT(C, TRAIT_NODROP, DISEASE_TRAIT)
-				H.equip_to_slot_or_del(C, SLOT_HEAD)
+				H.equip_to_slot_or_del(C, ITEM_SLOT_HEAD)
 			return
 		if(prob(chance))
 			if(!istype(H.wear_suit, /obj/item/clothing/suit/wizrobe))
@@ -72,7 +79,7 @@
 					qdel(H.wear_suit)
 				C = new /obj/item/clothing/suit/wizrobe(H)
 				ADD_TRAIT(C, TRAIT_NODROP, DISEASE_TRAIT)
-				H.equip_to_slot_or_del(C, SLOT_WEAR_SUIT)
+				H.equip_to_slot_or_del(C, ITEM_SLOT_OCLOTHING)
 			return
 		if(prob(chance))
 			if(!istype(H.shoes, /obj/item/clothing/shoes/sandal/magic))
@@ -80,7 +87,7 @@
 					qdel(H.shoes)
 				C = new /obj/item/clothing/shoes/sandal/magic(H)
 				ADD_TRAIT(C, TRAIT_NODROP, DISEASE_TRAIT)
-				H.equip_to_slot_or_del(C, SLOT_SHOES)
+				H.equip_to_slot_or_del(C, ITEM_SLOT_FEET)
 			return
 	else
 		var/mob/living/carbon/H = A.affected_mob

@@ -20,6 +20,7 @@ SUBSYSTEM_DEF(mapping)
 	var/list/shuttle_templates = list()
 	var/list/shelter_templates = list()
 	var/list/random_room_templates = list()
+	var/list/boarding_templates = list() //NSV13 - boarding maps
 
 	var/list/areas_in_z = list()
 
@@ -134,7 +135,7 @@ SUBSYSTEM_DEF(mapping)
 		qdel(T, TRUE)
 
 /* Nuke threats, for making the blue tiles on the station go RED
-   Used by the AI doomsday and the self destruct nuke.
+   Used by the AI doomsday and the self-destruct nuke.
 */
 
 /datum/controller/subsystem/mapping/proc/add_nuke_threat(datum/nuke)
@@ -164,6 +165,7 @@ SUBSYSTEM_DEF(mapping)
 	shuttle_templates = SSmapping.shuttle_templates
 	random_room_templates = SSmapping.random_room_templates
 	shelter_templates = SSmapping.shelter_templates
+	boarding_templates = SSmapping.boarding_templates //NSV13 - boarding maps
 	unused_turfs = SSmapping.unused_turfs
 	turf_reservations = SSmapping.turf_reservations
 	used_turfs = SSmapping.used_turfs
@@ -233,11 +235,12 @@ SUBSYSTEM_DEF(mapping)
 	station_start = world.maxz + 1
 	INIT_ANNOUNCE("Loading [config.map_name]...")
 	LoadGroup(FailedZs, "Station", config.map_path, config.map_file, config.traits, ZTRAITS_STATION)
-	if(config.overmap)
-		LoadGroup(FailedZs, "overmap", config.map_path, config.overmap, config.over_traits, ZTRAITS_OVERMAP)
-
+	//load in the overmap Z-levels and create the main overmap that we'll need.
+	instance_overmap(config.ship_type)
 	if(SSdbcore.Connect())
-		var/datum/DBQuery/query_round_map_name = SSdbcore.NewQuery("UPDATE [format_table_name("round")] SET map_name = '[config.map_name]' WHERE id = [GLOB.round_id]")
+		var/datum/DBQuery/query_round_map_name = SSdbcore.NewQuery({"
+			UPDATE [format_table_name("round")] SET map_name = :map_name WHERE id = :round_id
+		"}, list("map_name" = config.map_name, "round_id" = GLOB.round_id))
 		query_round_map_name.Execute()
 		qdel(query_round_map_name)
 
@@ -250,17 +253,9 @@ SUBSYSTEM_DEF(mapping)
 
 ///NSV13 RECODE OF MINING LOAD SELECTION
 	//Load Mining
-	switch(config.minetype)
-		if("lavaland")
-			LoadGroup(FailedZs, "Lavaland", "map_files/Mining", "Lavaland.dmm", default_traits = ZTRAITS_LAVALAND)
-		if("nostromo") //nsv13 mining type
-			LoadGroup(FailedZs, "nostromo", "map_files/Mining/nsv13", "nostromo.dmm", default_traits = ZTRAITS_BOARADABLE_SHIP)
-		if("FOB") //nsv13 mining type
-			LoadGroup(FailedZs, "FOB", "map_files/Mining/nsv13", "FOB_Shuttle.dmm", default_traits = ZTRAITS_BOARADABLE_SHIP)
-		if(null)
-			INIT_ANNOUNCE("WARNING: A null minetype was set! Inspect the map definition JSON!")
-		else
-			INIT_ANNOUNCE("WARNING: An unknown minetype '[config.minetype]' was set! This is being ignored! Update the maploader code!")
+	if(!config.mine_disable)
+		instance_overmap(_path=config.mining_ship_type, folder= config.mine_path ,interior_map_files = config.mine_file, traits=config.mine_traits)
+
 ///NSV13 END
 #endif
 
@@ -361,6 +356,7 @@ GLOBAL_LIST_EMPTY(the_station_areas)
 	preloadRuinTemplates()
 	preloadShuttleTemplates()
 	preloadShelterTemplates()
+	preloadBoardingTemplates() //NSV13 - boarding maps
 	preloadRandomRoomTemplates()
 
 /datum/controller/subsystem/mapping/proc/preloadRandomRoomTemplates()
@@ -396,7 +392,8 @@ GLOBAL_LIST_EMPTY(the_station_areas)
 			space_ruins_templates[R.name] = R
 
 /datum/controller/subsystem/mapping/proc/preloadShuttleTemplates()
-	var/list/unbuyable = generateMapList("[global.config.directory]/unbuyableshuttles.txt")
+	var/list/unbuyable = generateMapList("[global.config.directory]/shuttles_unbuyable.txt")
+	var/list/illegal = generateMapList("[global.config.directory]/shuttles_illegal.txt")
 
 	for(var/item in subtypesof(/datum/map_template/shuttle))
 		var/datum/map_template/shuttle/shuttle_type = item
@@ -406,6 +403,8 @@ GLOBAL_LIST_EMPTY(the_station_areas)
 		var/datum/map_template/shuttle/S = new shuttle_type()
 		if(unbuyable.Find(S.mappath))
 			S.can_be_bought = FALSE
+		if(illegal.Find(S.mappath))
+			S.illegal_shuttle = TRUE
 
 		shuttle_templates[S.shuttle_id] = S
 		map_templates[S.shuttle_id] = S
@@ -419,6 +418,16 @@ GLOBAL_LIST_EMPTY(the_station_areas)
 
 		shelter_templates[S.shelter_id] = S
 		map_templates[S.shelter_id] = S
+
+/datum/controller/subsystem/mapping/proc/preloadBoardingTemplates() //NSV13 - boarding maps
+	for(var/item in subtypesof(/datum/map_template/dropship))
+		var/datum/map_template/dropship/dropship_type = item
+		if(!(initial(dropship_type.mappath)))
+			continue
+		var/datum/map_template/dropship/D = new dropship_type()
+
+		boarding_templates[item] = D
+		map_templates[item] = D
 
 //Manual loading of away missions.
 /client/proc/admin_away()

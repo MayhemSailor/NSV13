@@ -9,7 +9,7 @@
 	var/obj/item/clothing/under/color/C = pick(subtypesof(/obj/item/clothing/under/color) - /obj/item/clothing/under/color/random - /obj/item/clothing/under/color/grey/glorf - /obj/item/clothing/under/color/black/ghost)
 	if(ishuman(loc))
 		var/mob/living/carbon/human/H = loc
-		H.equip_to_slot_or_del(new C(H), SLOT_W_UNIFORM) //or else you end up with naked assistants running around everywhere...
+		H.equip_to_slot_or_del(new C(H), ITEM_SLOT_ICLOTHING) //or else you end up with naked assistants running around everywhere...
 	else
 		new C(loc)
 	return INITIALIZE_HINT_QDEL
@@ -88,7 +88,7 @@
 	item_color = "yellow"
 
 /obj/item/clothing/under/color/darkblue
-	name = "darkblue jumpsuit"
+	name = "dark blue jumpsuit"
 	icon_state = "darkblue"
 	item_state = "b_suit"
 	item_color = "darkblue"
@@ -106,13 +106,13 @@
 	item_color = "lightpurple"
 
 /obj/item/clothing/under/color/darkgreen
-	name = "darkgreen jumpsuit"
+	name = "dark green jumpsuit"
 	icon_state = "darkgreen"
 	item_state = "g_suit"
 	item_color = "darkgreen"
 
 /obj/item/clothing/under/color/lightbrown
-	name = "lightbrown jumpsuit"
+	name = "light brown jumpsuit"
 	icon_state = "lightbrown"
 	item_state = "lb_suit"
 	item_color = "lightbrown"

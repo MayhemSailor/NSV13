@@ -91,7 +91,17 @@
 
 /datum/mood_event/cult
 	description = "<span class='nicegreen'>I have seen the truth, praise the almighty one!</span>\n"
-	mood_change = 10 //maybe being a cultist isnt that bad after all
+	mood_change = 10 //maybe being a cultist isn't that bad after all
+	hidden = TRUE
+
+/datum/mood_event/determined
+	description = "<span class='nicegreen'>I am determined to keep my friends safe.</span>\n"
+	mood_change = 2
+	hidden = TRUE
+
+/datum/mood_event/heretics
+	description = "<span class='nicegreen'>THE HIGHER I RISE , THE MORE I SEE.</span>\n"
+	mood_change = 10 //maybe being a cultist isn't that bad after all
 	hidden = TRUE
 
 /datum/mood_event/family_heirloom
@@ -118,7 +128,7 @@
 	timeout = 3 MINUTES
 
 /datum/mood_event/religiously_comforted
-	description = "<span class='nicegreen'>You are comforted by the presence of a holy person.</span>\n"
+	description = "<span class='nicegreen'>I feel comforted by the presence of a holy person.</span>\n"
 	mood_change = 3
 
 /datum/mood_event/clownshoes
@@ -149,17 +159,26 @@
 	description = "<span class='nicegreen'>The bottle landing like that was satisfying.</span>\n"
 	mood_change = 2
 	timeout = 3 MINUTES
-  
+
 /datum/mood_event/hope_lavaland
 	description = "<span class='nicegreen'>What a peculiar emblem.  It makes me feel hopeful for my future.</span>\n"
 	mood_change = 5
-  
+
 /datum/mood_event/nanite_happiness
 	description = "<span class='nicegreen robot'>+++++++HAPPINESS ENHANCEMENT+++++++</span>\n"
 	mood_change = 7
 
 /datum/mood_event/nanite_happiness/add_effects(message)
 	description = "<span class='nicegreen robot'>+++++++[message]+++++++</span>\n"
+
+/datum/mood_event/poppy_pin
+	description = "<span class='nicegreen'>I feel proud to show my remembrance of the many who have died to ensure that I have freedom.</span>\n"
+	mood_change = 1
+
+/datum/mood_event/funny_prank
+	description = "<span class='nicegreen'>That was a funny prank, clown!</span>\n"
+	mood_change = 2
+	timeout = 2 MINUTES
 
 /datum/mood_event/area
 	description = "" //Fill this out in the area
@@ -168,3 +187,11 @@
 /datum/mood_event/area/add_effects(list/param)
 	mood_change = param[1]
 	description = param[2]
+
+/datum/mood_event/sec_black_gloves
+	description = "<span class='nicegreen'>Black gloves look good on me.</span>\n"
+	mood_change = 1
+
+/datum/mood_event/assistant_insulated_gloves
+	description = "<span class='nicegreen'>Finally got my hands on a good pair of gloves!</span>\n"
+	mood_change = 1

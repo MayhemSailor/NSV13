@@ -19,11 +19,24 @@
 	desc = "Looks like it's been here a while.  Eew."
 	bloodiness = 0
 	icon_state = "floor1-old"
+	var/list/disease = list()
 
 /obj/effect/decal/cleanable/blood/old/Initialize(mapload, list/datum/disease/diseases)
 	add_blood_DNA(list("Non-human DNA" = random_blood_type())) // Needs to happen before ..()
 	. = ..()
 	icon_state = "[icon_state]-old" //change from the normal blood icon selected from random_icon_states in the parent's Initialize to the old dried up blood.
+	if(prob(40))
+		var/datum/disease/advance/R = new /datum/disease/advance/random(rand(1, 4), rand(4, 9))
+		disease += R
+
+/obj/effect/decal/cleanable/blood/old/extrapolator_act(mob/user, var/obj/item/extrapolator/E, scan = TRUE)
+	if(!disease.len)
+		return FALSE
+	if(scan)
+		E.scan(src, disease, user)
+	else
+		E.extrapolate(src, disease, user)
+	return TRUE
 
 /obj/effect/decal/cleanable/blood/splatter
 	icon_state = "gibbl1"
@@ -52,6 +65,7 @@
 	layer = LOW_OBJ_LAYER
 	random_icon_states = list("gib1", "gib2", "gib3", "gib4", "gib5", "gib6")
 	mergeable_decal = FALSE
+	turf_loc_check = FALSE
 
 	var/already_rotting = FALSE
 
@@ -68,6 +82,9 @@
 		name = "rotting [initial(name)]"
 		desc += " They smell terrible."
 	AddComponent(/datum/component/rot/gibs)
+
+/obj/effect/decal/cleanable/blood/gibs/replace_decal(obj/effect/decal/cleanable/C)
+	return FALSE //Never fail to place us
 
 /obj/effect/decal/cleanable/blood/gibs/ex_act(severity, target)
 	return
@@ -118,12 +135,25 @@
 	desc = "Space Jesus, why didn't anyone clean this up? They smell terrible."
 	bloodiness = 0
 	already_rotting = TRUE
+	var/list/disease = list()
 
 /obj/effect/decal/cleanable/blood/gibs/old/Initialize(mapload, list/datum/disease/diseases)
 	. = ..()
 	setDir(pick(1,2,4,8))
 	icon_state += "-old"
 	add_blood_DNA(list("Non-human DNA" = random_blood_type()))
+	if(prob(50))
+		var/datum/disease/advance/R = new /datum/disease/advance/random(rand(1, 6), rand(5, 9))
+		disease += R
+
+/obj/effect/decal/cleanable/blood/gibs/old/extrapolator_act(mob/user, var/obj/item/extrapolator/E, scan = TRUE)
+	if(!disease.len)
+		return FALSE
+	if(scan)
+		E.scan(src, disease, user)
+	else
+		E.extrapolate(src, disease, user)
+	return TRUE
 
 /obj/effect/decal/cleanable/blood/drip
 	name = "drips of blood"

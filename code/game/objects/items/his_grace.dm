@@ -14,6 +14,8 @@
 	icon = 'icons/obj/items_and_weapons.dmi'
 	w_class = WEIGHT_CLASS_GIGANTIC
 	force = 12
+	block_upgrade_walk = 1
+	block_level = 1
 	attack_verb = list("robusted")
 	hitsound = 'sound/weapons/smash.ogg'
 	var/awakened = FALSE
@@ -47,8 +49,8 @@
 	else
 		..()
 
-/obj/item/his_grace/CtrlClick(mob/user) //you can't pull his grace
-	return
+/obj/item/his_grace/can_be_pulled(user, grab_state, force)
+	return FALSE
 
 /obj/item/his_grace/examine(mob/user)
 	. = ..()
@@ -115,7 +117,7 @@
 			L.visible_message("<span class='warning'>[src] lunges at [L]!</span>", "<span class='his_grace big bold'>[src] lunges at you!</span>")
 			do_attack_animation(L, null, src)
 			playsound(L, 'sound/weapons/smash.ogg', 50, 1)
-			playsound(L, 'sound/misc/desceration-01.ogg', 50, 1)
+			playsound(L, 'sound/misc/desecration-01.ogg', 50, 1)
 			L.adjustBruteLoss(force)
 			adjust_bloodthirst(-5) //Don't stop attacking they're right there!
 		else
@@ -177,7 +179,7 @@
 	var/victims = 0
 	meal.visible_message("<span class='warning'>[src] swings open and devours [meal]!</span>", "<span class='his_grace big bold'>[src] consumes you!</span>")
 	meal.adjustBruteLoss(200)
-	playsound(meal, 'sound/misc/desceration-02.ogg', 75, 1)
+	playsound(meal, 'sound/misc/desecration-02.ogg', 75, 1)
 	playsound(src, 'sound/items/eatfood.ogg', 100, 1)
 	meal.forceMove(src)
 	force_bonus += HIS_GRACE_FORCE_BONUS

@@ -6,15 +6,41 @@
 	slot = ORGAN_SLOT_STOMACH
 	attack_verb = list("gored", "squished", "slapped", "digested")
 	desc = "Onaka ga suite imasu."
+
+	healing_factor = STANDARD_ORGAN_HEALING
+	decay_factor = STANDARD_ORGAN_DECAY
+
+	low_threshold_passed = "<span class='info'>Your stomach flashes with pain before subsiding. Food doesn't seem like a good idea right now.</span>"
+	high_threshold_passed = "<span class='warning'>Your stomach flares up with constant pain- you can hardly stomach the idea of food right now!</span>"
+	high_threshold_cleared = "<span class='info'>The pain in your stomach dies down for now, but food still seems unappealing.</span>"
+	low_threshold_cleared = "<span class='info'>The last bouts of pain in your stomach have died out.</span>"
+
 	var/disgust_metabolism = 1
 
 /obj/item/organ/stomach/on_life()
 	var/mob/living/carbon/human/H = owner
+	var/datum/reagent/Nutri
 
 	..()
 	if(istype(H))
-		H.dna.species.handle_digestion(H)
+		if(!(organ_flags & ORGAN_FAILING))
+			H.dna.species.handle_digestion(H)
 		handle_disgust(H)
+
+	if(damage < low_threshold)
+		return
+
+	Nutri = locate(/datum/reagent/consumable/nutriment) in H.reagents.reagent_list
+
+	if(Nutri)
+		if(prob((damage/40) * Nutri.volume * Nutri.volume))
+			H.vomit(damage)
+			to_chat(H, "<span class='warning'>Your stomach reels in pain as you're incapable of holding down all that food!</span>")
+
+	else if(Nutri && damage > high_threshold)
+		if(prob((damage/10) * Nutri.volume * Nutri.volume))
+			H.vomit(damage)
+			to_chat(H, "<span class='warning'>Your stomach reels in pain as you're incapable of holding down all that food!</span>")
 
 /obj/item/organ/stomach/proc/handle_disgust(mob/living/carbon/human/H)
 	if(H.disgust)
@@ -42,13 +68,13 @@
 			H.clear_alert("disgust")
 			SEND_SIGNAL(H, COMSIG_CLEAR_MOOD_EVENT, "disgust")
 		if(DISGUST_LEVEL_GROSS to DISGUST_LEVEL_VERYGROSS)
-			H.throw_alert("disgust", /obj/screen/alert/gross)
+			H.throw_alert("disgust", /atom/movable/screen/alert/gross)
 			SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "disgust", /datum/mood_event/gross)
 		if(DISGUST_LEVEL_VERYGROSS to DISGUST_LEVEL_DISGUSTED)
-			H.throw_alert("disgust", /obj/screen/alert/verygross)
+			H.throw_alert("disgust", /atom/movable/screen/alert/verygross)
 			SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "disgust", /datum/mood_event/verygross)
 		if(DISGUST_LEVEL_DISGUSTED to INFINITY)
-			H.throw_alert("disgust", /obj/screen/alert/disgusted)
+			H.throw_alert("disgust", /atom/movable/screen/alert/disgusted)
 			SEND_SIGNAL(H, COMSIG_ADD_MOOD_EVENT, "disgust", /datum/mood_event/disgusted)
 
 /obj/item/organ/stomach/Remove(mob/living/carbon/M, special = 0)
@@ -77,6 +103,7 @@
 	attack_verb = list("assault and battery'd")
 	desc = "A micro-cell, for IPC use only. Do not swallow."
 	status = ORGAN_ROBOTIC
+	organ_flags = ORGAN_SYNTHETIC
 
 /obj/item/organ/stomach/cell/emp_act(severity)
 	switch(severity)
@@ -85,4 +112,52 @@
 			to_chat(owner, "<span class='warning'>Alert: Heavy EMP Detected. Rebooting power cell to prevent damage.</span>")
 		if(2)
 			owner.nutrition = 250
-			to_chat(owner, "<span class='warning'>Alert: EMP Detected. Cycling battery.</span>") 
+			to_chat(owner, "<span class='warning'>Alert: EMP Detected. Cycling battery.</span>")
+
+/obj/item/organ/stomach/cell/Insert(mob/living/carbon/M, special = 0)
+	..()
+	RegisterSignal(owner, COMSIG_PROCESS_BORGCHARGER_OCCUPANT, .proc/charge)
+
+/obj/item/organ/stomach/cell/Remove(mob/living/carbon/M, special = 0)
+	UnregisterSignal(owner, COMSIG_PROCESS_BORGCHARGER_OCCUPANT)
+	..()
+
+/obj/item/organ/stomach/cell/proc/charge(datum/source, amount, repairs)
+	if(owner.nutrition < NUTRITION_LEVEL_WELL_FED)
+		owner.nutrition += (amount / 10) //IPCs can feed themselves from a borg recharging station
+	if(owner.nutrition >= NUTRITION_LEVEL_WELL_FED)
+		to_chat(owner, "<span class='warning'>You are already fully charged!</span>")
+		return
+
+/obj/item/organ/stomach/ethereal
+	name = "biological battery"
+	icon_state = "stomach-p" //Welp. At least it's more unique in functionaliy.
+	desc = "A crystal-like organ that stores the electric charge of ethereals."
+	var/crystal_charge = ETHEREAL_CHARGE_FULL
+
+/obj/item/organ/stomach/ethereal/on_life()
+	..()
+	adjust_charge(-ETHEREAL_CHARGE_FACTOR)
+
+/obj/item/organ/stomach/ethereal/Insert(mob/living/carbon/M, special = 0)
+	..()
+	RegisterSignal(owner, COMSIG_PROCESS_BORGCHARGER_OCCUPANT, .proc/charge)
+	RegisterSignal(owner, COMSIG_LIVING_ELECTROCUTE_ACT, .proc/on_electrocute)
+
+/obj/item/organ/stomach/ethereal/Remove(mob/living/carbon/M, special = 0)
+	UnregisterSignal(owner, COMSIG_PROCESS_BORGCHARGER_OCCUPANT)
+	UnregisterSignal(owner, COMSIG_LIVING_ELECTROCUTE_ACT)
+	..()
+
+//NSV13 changed amount / x from x = 70 to x = 3.5
+/obj/item/organ/stomach/ethereal/proc/charge(datum/source, amount, repairs)
+	adjust_charge(amount / 3.5)
+
+/obj/item/organ/stomach/ethereal/proc/on_electrocute(datum/source, shock_damage, siemens_coeff = 1, flags = NONE)
+	if(flags & SHOCK_ILLUSION)
+		return
+	adjust_charge(shock_damage * siemens_coeff * 2)
+	to_chat(owner, "<span class='notice'>You absorb some of the shock into your body!</span>")
+
+/obj/item/organ/stomach/ethereal/proc/adjust_charge(amount)
+	crystal_charge = clamp(crystal_charge + amount, ETHEREAL_CHARGE_NONE, ETHEREAL_CHARGE_FULL)

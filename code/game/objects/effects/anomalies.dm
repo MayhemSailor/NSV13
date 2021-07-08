@@ -92,14 +92,14 @@
 	for(var/obj/O in orange(4, src))
 		if(!O.anchored)
 			step_towards(O,src)
-	for(var/mob/living/M in range(0, src))
+	for(var/mob/living/M in get_turf(src))
 		gravShock(M)
-	for(var/mob/living/M in orange(4, src))
+	for(var/mob/living/M in orange(4, get_turf(src)))
 		if(!M.mob_negates_gravity())
 			step_towards(M,src)
-	for(var/obj/O in range(0,src))
+	for(var/obj/O in get_turf(src))
 		if(!O.anchored)
-			var/mob/living/target = locate() in view(4,src)
+			var/mob/living/target = locate() in hearers(4,src)
 			if(target && !target.stat)
 				O.throw_at(target, 5, 10)
 
@@ -146,7 +146,7 @@
 /obj/effect/anomaly/flux/anomalyEffect()
 	..()
 	canshock = 1
-	for(var/mob/living/M in range(0, src))
+	for(var/mob/living/M in get_turf(src))
 		mobShock(M)
 
 /obj/effect/anomaly/flux/Crossed(mob/living/M)
@@ -176,6 +176,8 @@
 /obj/effect/anomaly/flux/detonate()
 	if(explosive)
 		explosion(src, 1, 4, 16, 18) //Low devastation, but hits a lot of stuff.
+		log_game("A flux anomaly has detonated at [loc].")
+		message_admins("A flux anomaly has detonated at [ADMIN_VERBOSEJMP(loc)].")
 	else
 		new /obj/effect/particle_effect/sparks(loc)
 
@@ -190,7 +192,7 @@
 
 /obj/effect/anomaly/bluespace/anomalyEffect()
 	..()
-	for(var/mob/living/M in range(1,src))
+	for(var/mob/living/M in hearers(1,src))
 		do_teleport(M, locate(M.x, M.y, M.z), 4, channel = TELEPORT_CHANNEL_BLUESPACE)
 
 /obj/effect/anomaly/bluespace/Bumped(atom/movable/AM)
@@ -219,7 +221,7 @@
 			priority_announce("Massive bluespace translocation detected.", "Anomaly Alert")
 
 			var/list/flashers = list()
-			for(var/mob/living/carbon/C in viewers(TO, null))
+			for(var/mob/living/carbon/C in viewers(TO))
 				if(C.flash_act())
 					flashers += C
 
@@ -276,16 +278,19 @@
 	var/turf/open/T = get_turf(src)
 	if(istype(T))
 		T.atmos_spawn_air("o2=500;plasma=500;TEMP=1000") //Make it hot and burny for the new slime
+		log_game("A pyroclastic anomaly has detonated at [loc].")
+		message_admins("A pyroclastic anomaly has detonated at [ADMIN_VERBOSEJMP(loc)].")
 	var/new_colour = pick("red", "orange")
 	var/mob/living/simple_animal/slime/S = new(T, new_colour)
 	S.rabid = TRUE
 	S.amount_grown = SLIME_EVOLUTION_THRESHOLD
 	S.Evolve()
-	
+
 	var/list/mob/dead/observer/candidates = pollCandidatesForMob("Do you want to play as a pyroclastic anomaly slime?", ROLE_PAI, null, null, 100, S, POLL_IGNORE_PYROSLIME)
 	if(LAZYLEN(candidates))
 		var/mob/dead/observer/chosen = pick(candidates)
 		S.key = chosen.key
+		log_game("[key_name(S.key)] was made into a slime by pyroclastic anomaly at [AREACOORD(T)].")
 
 /////////////////////
 
@@ -303,15 +308,13 @@
 	grav(rand(0,3), rand(2,3), 50, 25)
 
 	//Throwing stuff around!
-	for(var/obj/O in range(2,src))
-		if(O == src)
-			return //DON'T DELETE YOURSELF GOD DAMN
+	for(var/obj/O in orange(2,src))
 		if(!O.anchored)
-			var/mob/living/target = locate() in view(4,src)
+			var/mob/living/target = locate() in hearers(4,src)
 			if(target && !target.stat)
 				O.throw_at(target, 7, 5)
 		else
-			O.ex_act(EXPLODE_HEAVY)
+			SSexplosions.med_mov_atom += O
 
 /obj/effect/anomaly/bhole/proc/grav(r, ex_act_force, pull_chance, turf_removal_chance)
 	for(var/t = -r, t < r, t++)
@@ -330,7 +333,13 @@
 	if(prob(pull_chance))
 		for(var/obj/O in T.contents)
 			if(O.anchored)
-				O.ex_act(ex_act_force)
+				switch(ex_act_force)
+					if(EXPLODE_DEVASTATE)
+						SSexplosions.high_mov_atom += O
+					if(EXPLODE_HEAVY)
+						SSexplosions.med_mov_atom += O
+					if(EXPLODE_LIGHT)
+						SSexplosions.low_mov_atom += O
 			else
 				step_towards(O,src)
 		for(var/mob/living/M in T.contents)
@@ -338,4 +347,10 @@
 
 	//Damaging the turf
 	if( T && prob(turf_removal_chance) )
-		T.ex_act(ex_act_force)
+		switch(ex_act_force)
+			if(EXPLODE_DEVASTATE)
+				SSexplosions.highturf += T
+			if(EXPLODE_HEAVY)
+				SSexplosions.medturf += T
+			if(EXPLODE_LIGHT)
+				SSexplosions.lowturf += T

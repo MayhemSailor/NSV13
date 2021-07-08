@@ -8,17 +8,17 @@
 	anchored = TRUE
 	density = FALSE
 	pixel_y = 26
+	safety = FALSE
 
 	circuit = /obj/item/circuitboard/machine/pdc_mount
 
 	fire_mode = FIRE_MODE_PDC
-	weapon_type = new/datum/ship_weapon/pdc_mount
 	magazine_type = /obj/item/ammo_box/magazine/pdc
 
 	auto_load = TRUE
 	semi_auto = TRUE
 	maintainable = FALSE
-	max_ammo = 100
+	max_ammo = 300
 
 	// We're fully automatic, so just the loading sound is enough
 	mag_load_sound = 'sound/weapons/autoguninsert.ogg'
@@ -113,11 +113,7 @@
 	return
 
 /obj/machinery/ship_weapon/pdc_mount/animate_projectile(atom/target, lateral=TRUE)
-	sleep(1)
-	if(lateral)
-		linked.fire_lateral_projectile(/obj/item/projectile/bullet/pdc_round, target)
-	else
-		linked.fire_projectiles(/obj/item/projectile/bullet/pdc_round, target)
+	. = ..()
 
 /obj/machinery/ship_weapon/pdc_mount/examine()
 	. = ..()
@@ -152,13 +148,13 @@
 	else
 		var/progress = calculate_progress()
 		icon_state_closed = "[initial(icon_state)]_[progress]"
-	. = default_deconstruction_screwdriver(user, icon_state_open, icon_state_closed, tool)
+	return default_deconstruction_screwdriver(user, icon_state_open, icon_state_closed, tool)
 
 /obj/machinery/ship_weapon/pdc_mount/crowbar_act(mob/user, obj/item/tool)
 	if(panel_open)
 		tool.play_tool_sound(src, 50)
 		deconstruct(TRUE)
 		return TRUE
-	. = default_deconstruction_crowbar(user, tool)
+	return default_deconstruction_crowbar(user, tool)
 
 #undef MSTATE_PRIEDOUT

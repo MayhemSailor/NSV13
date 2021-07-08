@@ -6,6 +6,14 @@
 	max_ammo = 7
 	multiple_sprites = 1
 
+/obj/item/ammo_box/shotgun_lethal
+	name = "speed loader (buckshot)"
+	desc = "Designed to quickly reload shell-based revolvers."
+	icon_state = "shotlethal"
+	ammo_type = /obj/item/ammo_casing/shotgun/buckshot
+	max_ammo = 6
+	multiple_sprites = 1
+
 /obj/item/ammo_box/c38
 	name = "speed loader (.38)"
 	desc = "Designed to quickly reload revolvers."
@@ -29,6 +37,13 @@
 	name = "speed loader (.38 Iceblox)"
 	desc = "Designed to quickly reload revolvers. Iceblox bullets contain a cryogenic payload."
 	ammo_type = /obj/item/ammo_casing/c38/iceblox
+
+/obj/item/ammo_box/c38/mime
+	name = "speed loader (.38 finger)"
+	max_ammo = 6
+	desc = "Designed to quickly reload your fingers with lethal rounds."
+	item_flags = DROPDEL
+	ammo_type = /obj/item/ammo_casing/caseless/mime/lethals
 
 /obj/item/ammo_box/c9mm
 	name = "ammo box (9mm)"

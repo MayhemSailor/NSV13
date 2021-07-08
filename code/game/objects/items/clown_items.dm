@@ -123,6 +123,13 @@
 		user.visible_message("[user] begins to clean \the [target.name] with [src]...", "<span class='notice'>You begin to clean \the [target.name] with [src]...</span>")
 		if(do_after(user, src.cleanspeed, target = target))
 			to_chat(user, "<span class='notice'>You clean \the [target.name].</span>")
+			if(isclothing(target) && HAS_TRAIT(target, TRAIT_SPRAYPAINTED))
+				var/obj/item/clothing/C = target
+				var/mob/living/carbon/human/H = user
+				C.flash_protect -= 1
+				C.tint -= 2
+				H.update_tint()
+				REMOVE_TRAIT(target, TRAIT_SPRAYPAINTED, CRAYON_TRAIT)
 			for(var/obj/effect/decal/cleanable/C in target)
 				qdel(C)
 			target.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
@@ -194,8 +201,7 @@
 	..()
 
 /obj/item/bikehorn/golden/proc/flip_mobs(mob/living/carbon/M, mob/user)
-	var/turf/T = get_turf(src)
-	for(M in ohearers(7, T))
+	for(M in ohearers(7, get_turf(src)))
 		if(ishuman(M) && M.can_hear())
 			var/mob/living/carbon/human/H = M
 			if(istype(H.ears, /obj/item/clothing/ears/earmuffs))

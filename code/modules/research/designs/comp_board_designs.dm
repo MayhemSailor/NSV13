@@ -21,6 +21,14 @@
 	build_path = /obj/item/circuitboard/computer/arcade/orion_trail
 	category = list("Computer Boards")
 	departmental_flags = DEPARTMENTAL_FLAG_ALL
+	
+/datum/design/board/amputation_adventure
+	name = "Computer Design (Mediborg's Amputation Adventure)"
+	desc = "Allows for the construction of circuit boards used to build a new Mediborg's Amputation Adventure machine."
+	id = "arcade_amputation"
+	build_path = /obj/item/circuitboard/computer/arcade/amputation
+	category = list("Computer Boards")
+	departmental_flags = DEPARTMENTAL_FLAG_ALL
 
 /datum/design/board/seccamera
 	name = "Computer Design (Security Camera)"
@@ -311,3 +319,19 @@
 	build_path = /obj/item/circuitboard/computer/advanced_camera
 	category = list("Computer Boards")
 	departmental_flags = DEPARTMENTAL_FLAG_SECURITY
+
+/datum/design/board/shuttle/flight_control
+	name = "Computer Design (Shuttle Flight Controls)"
+	desc = "Allows for the construction of circuit boards used to build a console that enables shuttle flight"
+	id = "shuttle_control"
+	build_path = /obj/item/circuitboard/computer/shuttle/flight_control
+	category = list("Computer Boards", "Shuttle Machinery")
+	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING
+
+/datum/design/board/shuttle/shuttle_docker
+	name = "Computer Design (Private Navigation Computer)"
+	desc = "Allows for the construction of circuit boards used to build a console that enables the targetting of custom flight locations"
+	id = "shuttle_docker"
+	build_path = /obj/item/circuitboard/computer/shuttle/docker
+	category = list("Computer Boards", "Shuttle Machinery")
+	departmental_flags = DEPARTMENTAL_FLAG_SCIENCE | DEPARTMENTAL_FLAG_ENGINEERING

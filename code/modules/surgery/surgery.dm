@@ -43,7 +43,7 @@
 	if(replaced_by == /datum/surgery)
 		return FALSE
 
-	if(HAS_TRAIT(user, TRAIT_SURGEON))
+	if(HAS_TRAIT(user, TRAIT_SURGEON) || (user.mind && HAS_TRAIT(user.mind, TRAIT_SURGEON)))
 		if(replaced_by)
 			return FALSE
 		else
@@ -121,7 +121,7 @@
 	var/selfpenalty = 0
 	var/sleepbonus = 0
 	if(target == user)
-		if(locate(/obj/structure/mirror) in range(1, T))
+		if(HAS_TRAIT(user, TRAIT_SELF_AWARE) || locate(/obj/structure/mirror) in view(1, user))
 			selfpenalty = 0.4
 		else
 			selfpenalty = 0.6
@@ -129,6 +129,8 @@
 		sleepbonus = 0.5
 	if(locate(/obj/structure/table/optable/abductor, T))
 		propability = 1.2
+	if(locate(/obj/machinery/stasis, T))
+		propability = 0.8
 	if(locate(/obj/structure/table/optable, T))
 		propability = 0.8
 	else if(locate(/obj/structure/table, T))

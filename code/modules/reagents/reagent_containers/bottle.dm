@@ -45,7 +45,7 @@
 	name = "chloral hydrate bottle"
 	desc = "A small bottle of Choral Hydrate. Mickey's Favorite!"
 	icon_state = "bottle20"
-	list_reagents = list(/datum/reagent/toxin/chloralhydrate = 15)
+	list_reagents = list(/datum/reagent/toxin/chloralhydrate = 30)
 
 /obj/item/reagent_containers/glass/bottle/mannitol
 	name = "mannitol bottle"
@@ -76,6 +76,11 @@
 	name = "formaldehyde bottle"
 	desc = "A small bottle of formaldehyde."
 	list_reagents = list(/datum/reagent/toxin/formaldehyde = 30)
+
+/obj/item/reagent_containers/glass/bottle/cryostylane
+	name = "cryostylane bottle"
+	desc = "A small bottle of cryostylane. It feels cold to the touch"
+	list_reagents = list(/datum/reagent/cryostylane = 30)
 
 /obj/item/reagent_containers/glass/bottle/ammonia
 	name = "ammonia bottle"
@@ -292,7 +297,12 @@
 	name = "bowl of blood"
 	desc = "A clay bowl containing a fledgling Necropolis, preserved in blood. A robust virologist may be able to unlock its full potential..."
 	icon_state = "mortar"
-	spawned_disease = /datum/disease/advance/necropolis
+	spawned_disease = /datum/disease/advance/random/necropolis
+
+/obj/item/reagent_containers/glass/bottle/felinid
+	name = "Nano-Feline Assimilative Toxoplasmosis culture bottle"
+	desc = "A small bottle. Contains a sample of nano-feline toxoplasma in synthblood medium"
+	spawned_disease = /datum/disease/transformation/felinid/contagious
 
 //Oldstation.dmm chemical storage bottles
 

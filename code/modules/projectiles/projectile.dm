@@ -37,7 +37,7 @@
 	var/datum/point/vector/trajectory
 	var/trajectory_ignore_forcemove = FALSE	//instructs forceMove to NOT reset our trajectory to the new location!
 
-	var/speed = 0.8			//Amount of deciseconds it takes for projectile to travel
+	var/speed = 0.7		//Amount of deciseconds it takes for projectile to travel
 	var/Angle = 0
 	var/original_angle = 0		//Angle at firing
 	var/nondirectional_sprite = FALSE //Set TRUE to prevent projectiles from having their sprites rotated based on firing angle
@@ -76,6 +76,7 @@
 	var/homing_inaccuracy_max = 0
 	var/homing_offset_x = 0
 	var/homing_offset_y = 0
+	var/targetAngle = 0 //NSV13 - required projectile child
 
 	var/ignore_source_check = FALSE
 
@@ -84,7 +85,7 @@
 	var/nodamage = FALSE //Determines if the projectile will skip any damage inflictions
 	var/flag = "bullet" //Defines what armor to use when it hits things.  Must be set to bullet, laser, energy,or bomb
 	var/projectile_type = /obj/item/projectile
-	var/range = 50 //This will de-increment every step. When 0, it will deletze the projectile.
+	var/range = 70 //This will de-increment every step. When 0, it will deletze the projectile.
 	var/decayedRange			//stores original range
 	var/reflect_range_decrease = 5			//amount of original range that falls off when reflecting, so it doesn't go forever
 	var/reflectable = NONE // Can it be reflected or not?
@@ -107,6 +108,7 @@
 	var/faction = null //NSV13 - bullets need factions for collision checks
 	var/next_homing_process = 0 //Nsv13 - performance enhancements
 	var/homing_delay = 0.7 SECONDS //Nsv13 - performance enhancements. 1 second delay is noticeably slow
+	var/martial_arts_no_deflect = FALSE
 
 	var/temporary_unstoppable_movement = FALSE
 
@@ -176,14 +178,15 @@
 			if(isalien(L))
 				new /obj/effect/temp_visual/dir_setting/bloodsplatter/xenosplatter(target_loca, splatter_dir)
 			var/obj/item/bodypart/B = L.get_bodypart(def_zone)
-			if(B.status == BODYPART_ROBOTIC) // So if you hit a robotic, it sparks instead of bloodspatters
-				do_sparks(2, FALSE, target.loc)
-				if(prob(25))
-					new /obj/effect/decal/cleanable/oil(target_loca)
-			else
-				new /obj/effect/temp_visual/dir_setting/bloodsplatter(target_loca, splatter_dir)
-			if(prob(33))
-				L.add_splatter_floor(target_loca)
+			if(B)
+				if(B.status == BODYPART_ROBOTIC) // So if you hit a robotic, it sparks instead of bloodspatters
+					do_sparks(2, FALSE, target.loc)
+					if(prob(25))
+						new /obj/effect/decal/cleanable/oil(target_loca)
+				else
+					new /obj/effect/temp_visual/dir_setting/bloodsplatter(target_loca, splatter_dir)
+				if(prob(33))
+					L.add_splatter_floor(target_loca)
 		else if(impact_effect_type && !hitscan)
 			new impact_effect_type(target_loca, hitx, hity)
 
@@ -203,11 +206,16 @@
 		L.on_hit(src)
 
 	var/reagent_note
-	if(reagents?.reagent_list)
+	if(length(reagents?.reagent_list) > 0)
 		reagent_note = " REAGENTS:"
 		for(var/datum/reagent/R in reagents.reagent_list)
 			reagent_note += "[R.name] ([num2text(R.volume)])"
-
+	if(istype(src, /obj/item/projectile/bullet/dart))
+		var/obj/item/projectile/bullet/dart/D = src
+		if(length(D.syringe?.reagents?.reagent_list) > 0)
+			reagent_note = " REAGENTS:"
+			for(var/datum/reagent/R in D.syringe.reagents.reagent_list)
+				reagent_note += "[R.name] ([num2text(R.volume)])"
 	if(ismob(firer))
 		log_combat(firer, L, "shot", src, reagent_note)
 	else
@@ -229,7 +237,15 @@
 	beam_index = pcache
 	beam_segments[beam_index] = null
 
+/obj/item/projectile/CanPass(atom/movable/mover, turf/target)
+	. = ..()
+	if(!check_faction(mover))
+		return TRUE 	 //Nsv13 - faction checking for overmaps. We're gonna just cut off real early and save some math if the IFF doesn't check out.
+
 /obj/item/projectile/Bump(atom/A)
+	if(!trajectory)
+		var/turf/starting = get_turf(src)
+		trajectory = new(starting.x, starting.y, starting.z, pixel_x, pixel_y, Angle, SSprojectiles.global_pixel_speed)
 	var/datum/point/pcache = trajectory.copy_to()
 	var/turf/T = get_turf(A)
 	if(check_ricochet(A) && check_ricochet_flag(A) && ricochets < ricochets_max)
@@ -384,8 +400,6 @@
 			required_moves = SSprojectiles.global_max_tick_moves
 			time_offset += overrun * speed
 		time_offset += MODULUS(elapsed_time_deciseconds, speed)
-	if(collider2d) //Nsv13 change.
-		check_overmap_collisions()
 
 	for(var/i in 1 to required_moves)
 		pixel_move(1, FALSE)
@@ -401,7 +415,7 @@
 			direct_target.bullet_act(src, def_zone)
 			qdel(src)
 			return
-	if(isnum(angle))
+	if(isnum_safe(angle))
 		setAngle(angle)
 	if(spread)
 		setAngle(Angle + ((rand() - 0.5) * spread))
@@ -534,14 +548,16 @@
 		pixel_x = trajectory.return_px() - trajectory.mpx * trajectory_multiplier * SSprojectiles.global_iterations_per_move
 		pixel_y = trajectory.return_py() - trajectory.mpy * trajectory_multiplier * SSprojectiles.global_iterations_per_move
 		animate(src, pixel_x = trajectory.return_px(), pixel_y = trajectory.return_py(), time = 1, flags = ANIMATION_END_NOW)
+	if(physics2d)
+		physics2d.update(x * 32 + pixel_x, y * 32 + pixel_y, Angle)
 	Range()
 
 /obj/item/projectile/proc/process_homing() //Nsv13 - Enhanced the performance of this entire proc.
 	if(!homing_target) //NSV13 - Changed proc to be less performance intensive
 		return FALSE
-	next_homing_process = world.time + homing_delay
 	var/targetAngle = Get_Angle(src, homing_target)
 	var/angle = closer_angle_difference(Angle, targetAngle)
+	next_homing_process = world.time + homing_delay
 	setAngle(Angle + CLAMP(angle, -homing_turn_speed, homing_turn_speed))
 
 /obj/item/projectile/proc/set_homing_target(atom/A)
@@ -659,8 +675,9 @@
 /obj/item/projectile/Destroy()
 	if(hitscan)
 		finalize_hitscan_and_generate_tracers()
-	if(collider2d) //Nsv13
-		QDEL_NULL(collider2d)
+	if(physics2d) //Nsv13
+		physics2d.RemoveComponent()
+		qdel(physics2d)
 	STOP_PROCESSING(SSprojectiles, src)
 	cleanup_beam_segments()
 	qdel(trajectory)

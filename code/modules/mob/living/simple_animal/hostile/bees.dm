@@ -20,18 +20,19 @@
 	speak_emote = list("buzzes")
 	emote_hear = list("buzzes")
 	turns_per_move = 0
-	melee_damage_lower = 1
-	melee_damage_upper = 1
+	melee_damage = 1
 	attacktext = "stings"
 	response_help  = "shoos"
 	response_disarm = "swats away"
 	response_harm   = "squashes"
+	harm_intent_damage = 10 //you can swat bees in one hit
 	maxHealth = 10
 	health = 10
 	spacewalk = TRUE
 	faction = list("hostile")
 	move_to_delay = 0
 	obj_damage = 0
+	ventcrawler = VENTCRAWLER_ALWAYS
 	environment_smash = ENVIRONMENT_SMASH_NONE
 	mouse_opacity = MOUSE_OPACITY_OPAQUE
 	pass_flags = PASSTABLE | PASSGRILLE | PASSMOB
@@ -90,6 +91,7 @@
 	var/col = BEE_DEFAULT_COLOUR
 	if(beegent?.color)
 		col = beegent.color
+	chat_color = col
 
 	add_overlay("[icon_base]_base")
 
@@ -134,7 +136,7 @@
 			var/obj/structure/beebox/BB = target
 			forceMove(BB)
 			toggle_ai(AI_IDLE)
-			target = null
+			LoseTarget()
 			wanted_objects -= beehometypecache //so we don't attack beeboxes when not going home
 		return //no don't attack the goddamm box
 	else
@@ -150,16 +152,17 @@
 	if(istype(R))
 		beegent = R
 		name = "[initial(name)] ([R.name])"
+		real_name = name
 		poison_type = null
 		generate_bee_visuals()
 
 
 /mob/living/simple_animal/hostile/poison/bees/proc/pollinate(obj/machinery/hydroponics/Hydro)
 	if(!istype(Hydro) || !Hydro.myseed || Hydro.dead || Hydro.recent_bee_visit)
-		target = null
+		LoseTarget()
 		return
 
-	target = null //so we pick a new hydro tray next FindTarget(), instead of loving the same plant for eternity
+	LoseTarget() //so we pick a new hydro tray next FindTarget(), instead of loving the same plant for eternity
 	wanted_objects -= hydroponicstypecache //so we only hunt them while they're alive/seeded/not visisted
 	Hydro.recent_bee_visit = TRUE
 	addtimer(VARSET_CALLBACK(Hydro, recent_bee_visit, FALSE), BEE_TRAY_RECENT_VISIT)
@@ -195,7 +198,7 @@
 			if(idle <= BEE_IDLE_GOHOME && prob(BEE_PROB_GOHOME))
 				if(!FindTarget())
 					wanted_objects |= beehometypecache //so we don't attack beeboxes when not going home
-					target = beehome
+					GiveTarget(beehome)
 	if(!beehome) //add outselves to a beebox (of the same reagent) if we have no home
 		for(var/obj/structure/beebox/BB in view(vision_range, src))
 			if(reagent_incompatible(BB.queen_bee) || BB.bees.len >= BB.get_max_bees())

@@ -139,6 +139,8 @@
 		new /obj/item/storage/firstaid/radbgone(src)
 	else
 		new /obj/item/storage/pill_bottle/antirad(src)
+	if(prob(20)) //NSV13 - adding shovels for the meltdowns
+		new /obj/item/shovel(src)
 
 /*
  * Bombsuit closet
@@ -157,7 +159,7 @@
 
 /obj/structure/closet/bombcloset/security/PopulateContents()
 	new /obj/item/clothing/suit/bomb_suit/security(src)
-	new /obj/item/clothing/under/rank/security(src)
+	new /obj/item/clothing/under/rank/security/officer(src)
 	new /obj/item/clothing/shoes/jackboots(src)
 	new /obj/item/clothing/head/bomb_hood/security(src)
 

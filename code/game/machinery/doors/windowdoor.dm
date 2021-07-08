@@ -9,7 +9,7 @@
 	var/base_state = "left"
 	max_integrity = 150 //If you change this, consider changing ../door/window/brigdoor/ max_integrity at the bottom of this .dm file
 	integrity_failure = 0
-	armor = list("melee" = 20, "bullet" = 50, "laser" = 50, "energy" = 50, "bomb" = 10, "bio" = 100, "rad" = 100, "fire" = 70, "acid" = 100)
+	armor = list("melee" = 20, "bullet" = 50, "laser" = 50, "energy" = 50, "bomb" = 10, "bio" = 100, "rad" = 100, "fire" = 70, "acid" = 100, "stamina" = 0)
 	visible = FALSE
 	flags_1 = ON_BORDER_1
 	opacity = 0
@@ -42,6 +42,7 @@
 
 /obj/machinery/door/window/Destroy()
 	density = FALSE
+	air_update_turf(1)
 	QDEL_LIST(debris)
 	if(obj_integrity == 0)
 		playsound(src, "shatter", 70, 1)
@@ -354,7 +355,7 @@
 
 /obj/machinery/door/window/brigdoor/security/holding
 	name = "holding cell door"
-	req_one_access = list(ACCESS_SEC_DOORS, ACCESS_LAWYER) //love for the lawyer
+	req_one_access = list(ACCESS_SEC_DOORS, ACCESS_LAWYER, ACCESS_BRIGPHYS) //love for the lawyer and Brig Phys
 
 /obj/machinery/door/window/clockwork
 	name = "brass windoor"
@@ -363,6 +364,8 @@
 	base_state = "clockwork"
 	shards = 0
 	rods = 0
+	max_integrity = 50
+	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 10, "bio" = 100, "rad" = 100, "fire" = 70, "acid" = 100, "stamina" = 0)
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 	var/made_glow = FALSE
 
@@ -370,7 +373,6 @@
 	. = ..()
 	for(var/i in 1 to 2)
 		debris += new/obj/item/clockwork/alloy_shards/medium/gear_bit/large(src)
-	change_construction_value(2)
 
 /obj/machinery/door/window/clockwork/setDir(direct)
 	if(!made_glow)
@@ -380,19 +382,19 @@
 	..()
 
 /obj/machinery/door/window/clockwork/Destroy()
-	change_construction_value(-2)
 	return ..()
 
 /obj/machinery/door/window/clockwork/emp_act(severity)
 	if(prob(80/severity))
 		open()
 
-/obj/machinery/door/window/clockwork/ratvar_act()
-	if(GLOB.ratvar_awakens)
-		obj_integrity = max_integrity
-
 /obj/machinery/door/window/clockwork/hasPower()
 	return TRUE //yup that's power all right
+
+/obj/machinery/door/window/clockwork/allowed(mob/M)
+	if(is_servant_of_ratvar(M))
+		return TRUE
+	return FALSE
 
 /obj/machinery/door/window/clockwork/narsie_act()
 	take_damage(rand(30, 60), BRUTE)
@@ -402,10 +404,28 @@
 		animate(src, color = previouscolor, time = 8)
 		addtimer(CALLBACK(src, /atom/proc/update_atom_colour), 8)
 
-/obj/machinery/door/window/clockwork/allowed(mob/M)
-	if(is_servant_of_ratvar(M))
-		return 1
-	return 0
+/obj/machinery/door/window/clockwork/attackby(obj/item/I, mob/living/user, params)
+
+	if(operating)
+		return
+
+	add_fingerprint(user)
+	if(!(flags_1&NODECONSTRUCT_1))
+		if(I.tool_behaviour == TOOL_SCREWDRIVER)
+			I.play_tool_sound(src)
+			panel_open = !panel_open
+			to_chat(user, "<span class='notice'>You [panel_open ? "open":"close"] the maintenance panel of the [name].</span>")
+			return
+
+		if(I.tool_behaviour == TOOL_CROWBAR)
+			if(panel_open && !density && !operating)
+				user.visible_message("[user] begins to deconstruct [name].", \
+									 "<span class='notice'>You start to deconstruct from the [name]...</span>")
+				if(I.use_tool(src, user, 40, volume=50))
+					if(panel_open && !density && !operating && loc)
+						qdel(src)
+				return
+	return ..()
 
 /obj/machinery/door/window/northleft
 	dir = NORTH

@@ -33,14 +33,14 @@
 
 /datum/station_goal/dna_vault/get_report()
 	return {"Our long term prediction systems indicate a 99% chance of system-wide cataclysm in the near future.
-	 We need you to construct a DNA Vault aboard your station.
+	 We need you to construct a DNA Vault aboard your ship.
 
 	 The DNA Vault needs to contain samples of:
 	 [animal_count] unique animal data
 	 [plant_count] unique non-standard plant data
 	 [human_count] unique sapient humanoid DNA data
 
-	 Base vault parts are available for shipping via cargo."}
+	 Base vault parts are available for shipping via cargo."} //NSV13
 
 
 /datum/station_goal/dna_vault/on_report()
@@ -101,7 +101,7 @@
 		if(isanimal(target))
 			var/mob/living/simple_animal/A = target
 			if(!A.healable)//simple approximation of being animal not a robot or similar
-				to_chat(user, "<span class='warning'>No compatible DNA detected</span>")
+				to_chat(user, "<span class='warning'>No compatible DNA detected.</span>")
 				return
 		if(animals[target.type])
 			to_chat(user, "<span class='notice'>Animal data already present in local storage.</span>")
@@ -131,6 +131,8 @@
 	light_range = 3
 	light_power = 1.5
 	light_color = LIGHT_COLOR_CYAN
+
+
 
 
 	//High defaults so it's not completed automatically if there's no station goal
@@ -175,11 +177,15 @@
 	. = ..()
 
 
-/obj/machinery/dna_vault/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.physical_state)
-	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
+
+/obj/machinery/dna_vault/ui_state(mob/user)
+	return GLOB.physical_state
+
+/obj/machinery/dna_vault/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
 		roll_powers(user)
-		ui = new(user, src, ui_key, "dna_vault", name, 350, 400, master_ui, state)
+		ui = new(user, src, "DnaVault")
 		ui.open()
 
 
@@ -245,8 +251,6 @@
 		to_chat(user, "<span class='notice'>[uploaded] new datapoints uploaded.</span>")
 	else
 		return ..()
-
-
 
 /obj/machinery/dna_vault/proc/upgrade(mob/living/carbon/human/H,upgrade_type)
 	if(!(upgrade_type in power_lottery[H]))

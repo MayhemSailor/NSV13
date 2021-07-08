@@ -18,6 +18,9 @@
 /area/shuttle/transport)
 "e" = (
 /obj/machinery/door/airlock/titanium,
+/obj/machinery/door/firedoor/border_only/directional/north,
+/obj/machinery/door/firedoor/border_only/directional/south,
+/obj/structure/fans/tiny/invisible,
 /turf/open/floor/mineral/plastitanium,
 /area/shuttle/transport)
 "f" = (
@@ -28,8 +31,8 @@
 /obj/structure/window/shuttle,
 /obj/structure/grille,
 /obj/structure/shuttle/engine/heater{
-	icon_state = "heater";
-	dir = 8
+	dir = 8;
+	icon_state = "heater"
 	},
 /turf/open/floor/plating,
 /area/shuttle/transport)
@@ -78,9 +81,15 @@
 	port_direction = 2;
 	width = 5
 	},
-/obj/structure/grille,
-/obj/structure/window/shuttle,
-/turf/open/floor/plating,
+/obj/effect/turf_decal/tile/neutral,
+/obj/effect/turf_decal/tile/neutral{
+	dir = 1
+	},
+/obj/machinery/door/airlock/titanium,
+/obj/machinery/door/firedoor/border_only/directional/west,
+/obj/machinery/door/firedoor/border_only/directional/east,
+/obj/structure/fans/tiny/invisible,
+/turf/open/floor/mineral/plastitanium,
 /area/shuttle/transport)
 "m" = (
 /obj/structure/table/reinforced,

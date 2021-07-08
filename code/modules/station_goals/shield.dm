@@ -6,11 +6,11 @@
 	var/coverage_goal = 500
 
 /datum/station_goal/station_shield/get_report()
-	return {"The station is located in a zone full of space debris.
+	return {"The ship is located in a zone full of space debris.
 			 We have a prototype shielding system you must deploy to reduce collision-related accidents.
 
 			 You can order the satellites and control systems at cargo.
-			 "}
+			 "} //NSV13
 
 
 /datum/station_goal/station_shield/on_report()
@@ -40,12 +40,19 @@
 	name = "satellite control"
 	desc = "Used to control the satellite network."
 	circuit = /obj/item/circuitboard/computer/sat_control
+
+
+
 	var/notice
 
-/obj/machinery/computer/sat_control/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
-	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
+
+/obj/machinery/computer/sat_control/ui_state(mob/user)
+	return GLOB.default_state
+
+/obj/machinery/computer/sat_control/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, ui_key, "sat_control", name, 400, 305, master_ui, state)
+		ui = new(user, src, "SatelliteControl")
 		ui.open()
 
 /obj/machinery/computer/sat_control/ui_act(action, params)

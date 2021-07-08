@@ -102,7 +102,8 @@
 	atom/movable/virtualspeaker/speaker,  // representation of the method's speaker
 	datum/language/language,  // the langauge of the message
 	message,  // the text content of the message
-	spans  // the list of spans applied to the message
+	spans,  // the list of spans applied to the message
+	list/message_mods // the list of modification applied to the message. Whispering ect
 )
 	src.source = source
 	src.frequency = frequency
@@ -115,7 +116,8 @@
 		"message" = message,
 		"compression" = rand(35, 65),
 		"language" = lang_instance.name,
-		"spans" = spans
+		"spans" = spans,
+		"mods" = message_mods
 	)
 	var/turf/T = get_turf(source)
 	levels = list(T.z)
@@ -132,12 +134,12 @@
 	set waitfor = FALSE
 
 	// Perform final composition steps on the message.
-	var/message = copytext(data["message"], 1, MAX_BROADCAST_LEN)
+	var/message = copytext_char(data["message"], 1, MAX_BROADCAST_LEN)
 	if(!message)
 		return
 	var/compression = data["compression"]
 	if(compression > 0)
-		message = Gibberish(message, compression + 40)
+		message = Gibberish(message, compression >= 30)
 
 	// Assemble the list of radios
 	var/list/radios = list()
@@ -148,10 +150,10 @@
 				if(R.can_receive(frequency, levels))
 					radios += R
 
-			// Syndicate radios can hear all well-known radio channels
+			// Universal Decryption radios can hear all well-known radio channels
 			if (num2text(frequency) in GLOB.reverseradiochannels)
 				for(var/obj/item/radio/R in GLOB.all_radios["[FREQ_SYNDICATE]"])
-					if(R.can_receive(FREQ_SYNDICATE, list(R.z)))
+					if(R.hearall == TRUE)
 						radios |= R
 
 		if (TRANSMISSION_RADIO)
@@ -165,7 +167,9 @@
 			for(var/obj/item/radio/R in GLOB.all_radios["[frequency]"])
 				if(R.independent && R.can_receive(frequency, levels))
 					radios += R
-
+			// r syndicate
+				if(R.syndie && R.can_receive(frequency, levels))
+					radios += R
 	// From the list of radios, find all mobs who can hear those.
 	var/list/receive = get_mobs_in_radio_ranges(radios)
 
@@ -182,9 +186,10 @@
 	// Render the message and have everybody hear it.
 	// Always call this on the virtualspeaker to avoid issues.
 	var/spans = data["spans"]
+	var/list/message_mods = data["mods"]
 	var/rendered = virt.compose_message(virt, language, message, frequency, spans)
 	for(var/atom/movable/hearer in receive)
-		hearer.Hear(rendered, virt, language, message, frequency, spans)
+		hearer.Hear(rendered, virt, language, message, frequency, spans, message_mods)
 
 	// This following recording is intended for research and feedback in the use of department radio channels
 	if(length(receive))

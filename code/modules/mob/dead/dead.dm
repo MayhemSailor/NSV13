@@ -12,12 +12,12 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 		stack_trace("Warning: [src]([type]) initialized multiple times!")
 	flags_1 |= INITIALIZED_1
 	tag = "mob_[next_mob_id++]"
-	GLOB.mob_list += src
+	add_to_mob_list()
 
 	prepare_huds()
 
 	if(length(CONFIG_GET(keyed_list/cross_server)))
-		verbs += /mob/dead/proc/server_hop
+		add_verb(/mob/dead/proc/server_hop)
 	set_focus(src)
 	return INITIALIZE_HINT_NORMAL
 
@@ -30,9 +30,6 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 /mob/dead/gib()		//ghosts can't be gibbed.
 	return
 
-/mob/dead/ConveyorMove()	//lol
-	return
-
 /mob/dead/forceMove(atom/destination)
 	var/turf/old_turf = get_turf(src)
 	var/turf/new_turf = get_turf(destination)
@@ -42,27 +39,26 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 	loc = destination
 	Moved(oldloc, NONE, TRUE)
 
-/mob/dead/Stat()
-	..()
+/mob/dead/get_stat_tab_status()
+	var/list/tab_data = ..()
 
-	if(!statpanel("Status"))
-		return
-	stat(null, "Game Mode: [SSticker.hide_mode ? "Secret" : "[GLOB.master_mode]"]")
+	tab_data["Game Mode"] = GENERATE_STAT_TEXT("[SSticker.hide_mode ? "Secret" : "[GLOB.master_mode]"]")
 
 	if(SSticker.HasRoundStarted())
-		return
+		return tab_data
 
 	var/time_remaining = SSticker.GetTimeLeft()
 	if(time_remaining > 0)
-		stat(null, "Time To Start: [round(time_remaining/10)]s")
+		tab_data["Time To Start"] = GENERATE_STAT_TEXT("[round(time_remaining/10)]s")
 	else if(time_remaining == -10)
-		stat(null, "Time To Start: DELAYED")
+		tab_data["Time To Start"] = GENERATE_STAT_TEXT("DELAYED")
 	else
-		stat(null, "Time To Start: SOON")
+		tab_data["Time To Start"] = GENERATE_STAT_TEXT("SOON")
 
-	stat(null, "Players: [SSticker.totalPlayers]")
+	tab_data["Players"] = GENERATE_STAT_TEXT("[SSticker.totalPlayers]")
 	if(client.holder)
-		stat(null, "Players Ready: [SSticker.totalPlayersReady]")
+		tab_data["Players Ready"] = GENERATE_STAT_TEXT("[SSticker.totalPlayersReady]")
+	return tab_data
 
 /mob/dead/proc/server_hop()
 	set category = "OOC"
@@ -74,7 +70,7 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 	var/pick
 	switch(csa.len)
 		if(0)
-			verbs -= /mob/dead/proc/server_hop
+			remove_verb(/mob/dead/proc/server_hop)
 			to_chat(src, "<span class='notice'>Server Hop has been disabled.</span>")
 		if(1)
 			pick = csa[1]
@@ -91,7 +87,7 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 
 	var/client/C = client
 	to_chat(C, "<span class='notice'>Sending you to [pick].</span>")
-	new /obj/screen/splash(C)
+	new /atom/movable/screen/splash(C)
 
 	notransform = TRUE
 	sleep(29)	//let the animation play
@@ -102,7 +98,7 @@ INITIALIZE_IMMEDIATE(/mob/dead)
 
 	winset(src, null, "command=.options") //other wise the user never knows if byond is downloading resources
 
-	C << link("[addr]?server_hop=[key]")
+	C << link("[addr]")
 
 /mob/dead/proc/update_z(new_z) // 1+ to register, null to unregister
 	if (registered_z != new_z)

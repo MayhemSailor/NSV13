@@ -13,6 +13,7 @@
 #define AI_JF			(1<<9)
 #define CYBORG			(1<<10)
 #define BRIG_PHYS		(1<<11)
+#define DEPUTY  		(1<<12)
 
 
 #define MEDSCI			(1<<1)
@@ -43,12 +44,26 @@
 #define CLOWN			(1<<11)
 #define MIME			(1<<12)
 #define ASSISTANT		(1<<13)
+//NSV START
+
 #define BRIDGE_OFFICER		(1<<14) //NSV13
 #define MUNITIONS_TECHNICIAN	(1<<15) //NSV13
-#define FIGHTER_PILOT			(1<<16) //NSV13
-#define CAG						(1<<17) //NSV13
+#define DECK_TECHNICIAN			(1<<16) //NSV13
+#define PILOT					(1<<17) //NSV13
 #define AIR_TRAFFIC_CONTROLLER	(1<<18) //NSV13
 #define MASTER_AT_ARMS			(1<<19) //NSV13
+
+#define GIMMICK 		(1<<20)
+#define BARBER		    (1<<21)
+#define MAGICIAN        (1<<22)
+
+//Bitshifts beyond this point are nonfunctional. if Gimmick gets above here we're going to have a problem.
+
+#define HOBO            (1<<23)
+#define SHRINK          (1<<24)
+#define CELEBRITY       (1<<25)
+
+//NSV END
 
 #define JOB_AVAILABLE 0
 #define JOB_UNAVAILABLE_GENERIC 1
@@ -94,10 +109,11 @@
 #define JOB_DISPLAY_ORDER_DETECTIVE 30
 #define JOB_DISPLAY_ORDER_SECURITY_OFFICER 31
 #define JOB_DISPLAY_ORDER_BRIG_PHYS 32
-#define JOB_DISPLAY_ORDER_AI 33
-#define JOB_DISPLAY_ORDER_CYBORG 34
-#define JOB_DISPLAY_ORDER_MASTER_AT_ARMS 35 // NSV13
-#define JOB_DISPLAY_ORDER_MUNITIONS_TECHNICIAN 36 //NSV13
-#define JOB_DISPLAY_ORDER_AIR_TRAFFIC_CONTROLLER 37 //NSV13
-#define JOB_DISPLAY_ORDER_CAG 38 //NSV13
-#define JOB_DISPLAY_ORDER_FIGHTER_PILOT 39 //NSV13
+#define JOB_DISPLAY_ORDER_DEPUTY 33
+#define JOB_DISPLAY_ORDER_AI 34
+#define JOB_DISPLAY_ORDER_CYBORG 35
+#define JOB_DISPLAY_ORDER_MASTER_AT_ARMS 36 // NSV13
+#define JOB_DISPLAY_ORDER_MUNITIONS_TECHNICIAN 37 //NSV13
+#define JOB_DISPLAY_ORDER_DECK_TECHNICIAN 38 //NSV13
+#define JOB_DISPLAY_ORDER_AIR_TRAFFIC_CONTROLLER 39 //NSV13
+#define JOB_DISPLAY_ORDER_PILOT 40 //NSV13

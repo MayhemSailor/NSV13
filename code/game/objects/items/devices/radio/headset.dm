@@ -12,9 +12,10 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	RADIO_CHANNEL_SERVICE = RADIO_TOKEN_SERVICE,
 	RADIO_CHANNEL_ATC = RADIO_TOKEN_ATC,
 	RADIO_CHANNEL_MUNITIONS = RADIO_TOKEN_MUNITIONS,
+	RADIO_CHANNEL_PIRATE = RADIO_CHANNEL_PIRATE,
 	MODE_BINARY = MODE_TOKEN_BINARY,
 	RADIO_CHANNEL_AI_PRIVATE = RADIO_TOKEN_AI_PRIVATE
-)) //Nsv13 - Atc chat & munitions
+)) //Nsv13 - Atc chat & munitions & space pirates
 
 /obj/item/radio/headset
 	name = "radio headset"
@@ -23,7 +24,9 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	item_state = "headset"
 	materials = list(/datum/material/iron=75)
 	subspace_transmission = TRUE
+	headset = TRUE
 	canhear_range = 0 // can't hear headsets from very far away
+	var/bang_protect = 0 //this isn't technically clothing so it needs its own bang_protect var
 
 	slot_flags = ITEM_SLOT_EARS
 	var/obj/item/encryptionkey/keyslot2 = null
@@ -62,7 +65,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	QDEL_NULL(keyslot2)
 	return ..()
 
-/obj/item/radio/headset/talk_into(mob/living/M, message, channel, list/spans,datum/language/language)
+/obj/item/radio/headset/talk_into(mob/living/M, message, channel, list/spans, datum/language/language, list/message_mods)
 	if (!listening)
 		return ITALICS | REDUCE_RANGE
 	return ..()
@@ -76,17 +79,18 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 		return ..(freq, level)
 	return FALSE
 
+/obj/item/radio/headset/ui_data(mob/user)
+	. = ..()
+	.["headset"] = TRUE
+
 /obj/item/radio/headset/syndicate //disguised to look like a normal headset for stealth ops
 
 /obj/item/radio/headset/syndicate/alt //undisguised bowman with flash protection
 	name = "syndicate headset"
-	desc = "A syndicate headset that can be used to hear all radio frequencies. Protects ears from flashbangs."
+	desc = "A syndicate headset that can be used to hear syndicate frequencies. Protects ears from flashbangs."
 	icon_state = "syndie_headset"
 	item_state = "syndie_headset"
-
-/obj/item/radio/headset/syndicate/alt/ComponentInitialize()
-	. = ..()
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+	bang_protect = 1
 
 /obj/item/radio/headset/syndicate/alt/leader
 	name = "team leader headset"
@@ -120,10 +124,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	desc = "This is used by your elite security force. Protects ears from flashbangs."
 	icon_state = "sec_headset_alt"
 	item_state = "sec_headset_alt"
-
-/obj/item/radio/headset/headset_sec/alt/ComponentInitialize()
-	. = ..()
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+	bang_protect = 1
 
 /obj/item/radio/headset/headset_eng
 	name = "engineering radio headset"
@@ -181,10 +182,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	desc = "The headset of the boss. Protects ears from flashbangs."
 	icon_state = "com_headset_alt"
 	item_state = "com_headset_alt"
-
-/obj/item/radio/headset/heads/captain/alt/ComponentInitialize()
-	. = ..()
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+	bang_protect = 1
 
 /obj/item/radio/headset/heads/rd
 	name = "\proper the research director's headset"
@@ -203,10 +201,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	desc = "The headset of the man in charge of keeping order and protecting the station. Protects ears from flashbangs."
 	icon_state = "com_headset_alt"
 	item_state = "com_headset_alt"
-
-/obj/item/radio/headset/heads/hos/ComponentInitialize()
-	. = ..()
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+	bang_protect = 1
 
 /obj/item/radio/headset/heads/ce
 	name = "\proper the chief engineer's headset"
@@ -224,7 +219,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	name = "\proper the executive officer's headset"
 	desc = "The headset of the guy who will one day be captain."
 	icon_state = "com_headset"
-	keyslot = new /obj/item/encryptionkey/heads/xo
+	keyslot = new /obj/item/encryptionkey/heads/captain //NSV13 - inserted captain key for better communication facilitation
 
 /obj/item/radio/headset/headset_cargo
 	name = "supply radio headset"
@@ -264,10 +259,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 	icon_state = "cent_headset_alt"
 	item_state = "cent_headset_alt"
 	keyslot = null
-
-/obj/item/radio/headset/headset_cent/alt/ComponentInitialize()
-	. = ..()
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+	bang_protect = 1
 
 /obj/item/radio/headset/silicon/pai
 	name = "\proper mini Integrated Subspace Transceiver "
@@ -334,6 +326,8 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 
 		if(keyslot2.translate_binary)
 			translate_binary = TRUE
+		if(keyslot2.hearall)
+			hearall = TRUE
 		if(keyslot2.syndie)
 			syndie = TRUE
 		if (keyslot2.independent)

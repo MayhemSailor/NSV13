@@ -40,10 +40,12 @@
 	for(var/spath in subtypesof(/datum/species))
 		var/datum/species/S = new spath()
 		GLOB.species_list[S.id] = spath
+	sortList(GLOB.species_list)
 
 	//Surgeries
 	for(var/path in subtypesof(/datum/surgery))
 		GLOB.surgeries_list += new path()
+	sortList(GLOB.surgeries_list)
 
 	GLOB.emote_list = init_emote_list()
 

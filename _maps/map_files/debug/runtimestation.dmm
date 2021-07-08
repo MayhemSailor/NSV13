@@ -340,8 +340,8 @@
 /area/engine/atmos)
 "bo" = (
 /obj/structure/table,
-/obj/item/screwdriver/power,
-/obj/item/wirecutters/power,
+/obj/item/powertool/hand_drill,
+/obj/item/powertool/jaws_of_life,
 /turf/open/floor/plasteel,
 /area/engine/engineering)
 "bp" = (
@@ -406,7 +406,7 @@
 /turf/open/floor/plasteel,
 /area/science)
 "bC" = (
-/obj/machinery/computer/gulag_teleporter_computer{
+/obj/machinery/computer/prisoner/gulag_teleporter_computer{
 	dir = 4
 	},
 /turf/open/floor/plasteel,

@@ -57,14 +57,14 @@
 	var/success = FALSE
 
 	if(target.mind && target.client && target.stat != DEAD)
-		if(!HAS_TRAIT(target, TRAIT_MINDSHIELD) || ignore_mindshield)
+		if((!HAS_TRAIT(target, TRAIT_MINDSHIELD) || ignore_mindshield) && !istype(target.get_item_by_slot(ITEM_SLOT_HEAD), /obj/item/clothing/head/foilhat))
 			if(HAS_TRAIT(target, TRAIT_MINDSHIELD) && ignore_mindshield)
 				to_chat(user, "<span class='notice'>We bruteforce our way past the mental barriers of [target.name] and begin linking our minds!</span>")
 			else
 				to_chat(user, "<span class='notice'>We begin linking our mind with [target.name]!</span>")
-			if(do_after(user,5*(1.5**get_dist(user, target)),0,user) && (target in view(range)))
-				if(do_after(user,5*(1.5**get_dist(user, target)),0,user) && (target in view(range)))
-					if((!HAS_TRAIT(target, TRAIT_MINDSHIELD) || ignore_mindshield) && (target in view(range)))
+			if(do_after(user,5*(1.5**get_dist(user, target)),0,user) && (user in viewers(range, target)))
+				if(do_after(user,5*(1.5**get_dist(user, target)),0,user) && (user in viewers(range, target)))
+					if((!HAS_TRAIT(target, TRAIT_MINDSHIELD) || ignore_mindshield) && (user in viewers(range, target)))
 						to_chat(user, "<span class='notice'>[target.name] was added to the Hive!</span>")
 						success = TRUE
 						hive.add_to_hive(target)
@@ -140,7 +140,7 @@
 			active = TRUE
 			host = user
 			user.clear_fullscreen("hive_mc")
-			user.overlay_fullscreen("hive_eyes", /obj/screen/fullscreen/hive_eyes)
+			user.overlay_fullscreen("hive_eyes", /atom/movable/screen/fullscreen/hive_eyes)
 		revert_cast()
 	else
 		vessel.remove_status_effect(STATUS_EFFECT_BUGGED)
@@ -148,7 +148,7 @@
 		user.clear_fullscreen("hive_eyes")
 		var/obj/effect/proc_holder/spell/target_hive/hive_control/the_spell = locate(/obj/effect/proc_holder/spell/target_hive/hive_control) in user.mind.spell_list
 		if(the_spell && the_spell.active)
-			user.overlay_fullscreen("hive_mc", /obj/screen/fullscreen/hive_mc)
+			user.overlay_fullscreen("hive_mc", /atom/movable/screen/fullscreen/hive_mc)
 		active = FALSE
 		revert_cast()
 
@@ -298,7 +298,7 @@
 	var/list/carbon_members = hive.get_carbon_members()
 	if(!carbon_members.len)
 		return
-	if(!user.getBruteLoss() && !user.getFireLoss() && !user.getCloneLoss() && !user.getBrainLoss())
+	if(!user.getBruteLoss() && !user.getFireLoss() && !user.getCloneLoss() && !user.getOrganLoss(ORGAN_SLOT_BRAIN))
 		to_chat(user, "<span class='notice'>We cannot heal ourselves any more with this power!</span>")
 		revert_cast()
 	to_chat(user, "<span class='notice'>We begin siphoning power from our many vessels!</span>")
@@ -310,16 +310,16 @@
 		if(!target)
 			to_chat(user, "<span class='warning'>We have run out of vessels to drain.</span>")
 			break
-		target.adjustBrainLoss(5)
+		target.adjustOrganLoss(ORGAN_SLOT_BRAIN, 5)
 		if(user.getBruteLoss() > user.getFireLoss())
 			user.heal_ordered_damage(5, list(CLONE, BRUTE, BURN))
 		else
 			user.heal_ordered_damage(5, list(CLONE, BURN, BRUTE))
 		if(!user.getBruteLoss() && !user.getFireLoss() && !user.getCloneLoss()) //If we don't have any of these, stop looping
-			to_chat(user, "<span class='warning'>We finish our healing</span>")
+			to_chat(user, "<span class='warning'>We finish our healing.</span>")
 			break
 		iterations++
-	user.setBrainLoss(0)
+	user.setOrganLoss(ORGAN_SLOT_BRAIN, 0)
 
 
 /mob/living/passenger
@@ -334,7 +334,7 @@
 	to_chat(src, "<span class='warning'>You find yourself unable to emote, you aren't in control of your body!</span>")
 	return
 
-/mob/living/passenger/Hear(message, atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, list/spans, message_mode)
+/mob/living/passenger/Hear(message, atom/movable/speaker, datum/language/message_language, raw_message, radio_freq, list/spans, message_mods)
 	return
 
 /obj/effect/proc_holder/spell/target_hive/hive_control
@@ -430,7 +430,7 @@
 			vessel.mind.transfer_to(backseat, 1)
 			user.mind.transfer_to(vessel, 1)
 			backseat.blind_eyes(power)
-			vessel.overlay_fullscreen("hive_mc", /obj/screen/fullscreen/hive_mc)
+			vessel.overlay_fullscreen("hive_mc", /atom/movable/screen/fullscreen/hive_mc)
 			active = TRUE
 			out_of_range = FALSE
 			starting_spot = get_turf(vessel)
@@ -451,13 +451,13 @@
 /obj/effect/proc_holder/spell/target_hive/hive_control/process()
 	if(active)
 		if(QDELETED(vessel)) //If we've been gibbed or otherwise deleted, ghost both of them and kill the original
-			original_body.adjustBrainLoss(200)
+			original_body.adjustOrganLoss(ORGAN_SLOT_BRAIN, 200)
 			release_control()
 		else if(!is_hivemember(backseat)) //If the vessel is no longer a hive member, return to original bodies
 			to_chat(vessel, "<span class='warning'>Our vessel is one of us no more!</span>")
 			release_control()
 		else if(!QDELETED(original_body) && (!backseat.ckey || vessel.stat == DEAD)) //If the original body exists and the vessel is dead/ghosted, return both to body but not before killing the original
-			original_body.adjustBrainLoss(200)
+			original_body.adjustOrganLoss(ORGAN_SLOT_BRAIN, 200)
 			to_chat(vessel.mind, "<span class='warning'>Our vessel is one of us no more!</span>")
 			release_control()
 		else if(!QDELETED(original_body) && original_body.z != vessel.z) //Return to original bodies
@@ -628,7 +628,7 @@
 	distort(user, target, pulse_cap)
 
 /obj/effect/proc_holder/spell/target_hive/hive_warp/proc/distort(user, target, pulse_cap, pulses = 0)
-	for(var/mob/living/carbon/human/victim in view(7,target))
+	for(var/mob/living/carbon/human/victim in hearers(7,target))
 		if(user == victim || victim.is_real_hivehost())
 			continue
 		if(pulses < 4)
@@ -853,9 +853,9 @@
 	var/wall_type_b = /obj/effect/forcefield/wizard/hive/invis
 
 /obj/effect/proc_holder/spell/targeted/forcewall/hive/cast(list/targets,mob/user = usr)
-	new wall_type(get_turf(user),user)
+	new wall_type(get_turf(user), null, user)
 	for(var/dir in GLOB.alldirs)
-		new wall_type_b(get_step(user, dir),user)
+		new wall_type_b(get_step(user, dir), null, user)
 	var/datum/antagonist/hivemind/hive = user.mind.has_antag_datum(/datum/antagonist/hivemind)
 	if(hive)
 		hive.threat_level += 0.5
@@ -938,6 +938,7 @@
 		addtimer(CALLBACK(GLOBAL_PROC, /proc/to_chat, C, "<span class='assimilator'>There is no you...</span>"), 110)
 		addtimer(CALLBACK(GLOBAL_PROC, /proc/to_chat, C, "<span class='bigassimilator'>...there is only us.</span>"), 130)
 		addtimer(CALLBACK(C, /mob/living/proc/hive_awaken, new_objective, one_mind_team), 150)
+		log_objective(M, new_objective.explanation_text)
 
 /obj/effect/proc_holder/spell/self/hive_comms
 	name = "Hive Communication"

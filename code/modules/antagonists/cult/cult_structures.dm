@@ -65,14 +65,6 @@
 	else
 		return ..()
 
-/obj/structure/destructible/cult/ratvar_act()
-	if(take_damage(rand(25, 50), BURN) && !QDELETED(src)) //if we still exist
-		var/previouscolor = color
-		color = "#FAE48C"
-		animate(src, color = previouscolor, time = 8)
-		addtimer(CALLBACK(src, /atom/proc/update_atom_colour), 8)
-
-
 /obj/structure/destructible/cult/talisman
 	name = "altar"
 	desc = "A bloodstained altar dedicated to Nar'Sie."
@@ -162,9 +154,13 @@
 	var/corrupt_delay = 50
 	var/last_corrupt = 0
 
-/obj/structure/destructible/cult/pylon/New()
-	START_PROCESSING(SSfastprocess, src)
+/obj/structure/destructible/cult/pylon/Initialize()
 	..()
+	return INITIALIZE_HINT_LATELOAD
+
+/obj/structure/destructible/cult/pylon/LateInitialize()
+	. = ..()
+	START_PROCESSING(SSfastprocess, src)
 
 /obj/structure/destructible/cult/pylon/Destroy()
 	STOP_PROCESSING(SSfastprocess, src)
@@ -213,9 +209,9 @@
 		var/turf/T = safepick(validturfs)
 		if(T)
 			if(istype(T, /turf/open/floor/plating))
-				T.PlaceOnTop(/turf/open/floor/engine/cult)
+				T.PlaceOnTop(/turf/open/floor/engine/cult, flags = CHANGETURF_INHERIT_AIR)
 			else
-				T.ChangeTurf(/turf/open/floor/engine/cult)
+				T.ChangeTurf(/turf/open/floor/engine/cult, flags = CHANGETURF_INHERIT_AIR)
 		else
 			var/turf/open/floor/engine/cult/F = safepick(cultturfs)
 			if(F)
@@ -261,6 +257,9 @@
 		for(var/N in pickedtype)
 			new N(get_turf(src))
 			to_chat(user, "<span class='cultitalic'>You summon the [choice] from the archives!</span>")
+
+/obj/structure/destructible/cult/tome/library //library archive
+	debris = null
 
 /obj/effect/gateway
 	name = "gateway"

@@ -19,10 +19,10 @@
 
 	if(!length(C.parallax_layers_cached))
 		C.parallax_layers_cached = list()
-		C.parallax_layers_cached += new /obj/screen/parallax_layer/layer_1(null, C.view, viewmob)//Nsv13 - FTL parallax
-		C.parallax_layers_cached += new /obj/screen/parallax_layer/layer_2(null, C.view, viewmob)//Nsv13 - FTL parallax
-		C.parallax_layers_cached += new /obj/screen/parallax_layer/planet(null, C.view, viewmob)//Nsv13 - FTL parallax
-		C.parallax_layers_cached += new /obj/screen/parallax_layer/layer_3(null, C.view, viewmob)//Nsv13 - FTL parallax
+		C.parallax_layers_cached += new /atom/movable/screen/parallax_layer/layer_1(null, C.view, viewmob)//Nsv13 - FTL parallax
+		C.parallax_layers_cached += new /atom/movable/screen/parallax_layer/layer_2(null, C.view, viewmob)//Nsv13 - FTL parallax
+		C.parallax_layers_cached += new /atom/movable/screen/parallax_layer/ftl_parallax //Nsv13 - We also snapped the planet layer.
+		C.parallax_layers_cached += new /atom/movable/screen/parallax_layer/layer_3(null, C.view, viewmob)//Nsv13 - FTL parallax
 
 	C.parallax_layers = C.parallax_layers_cached.Copy()
 
@@ -30,9 +30,9 @@
 		C.parallax_layers.len = C.parallax_layers_max
 
 	C.screen |= (C.parallax_layers)
-	var/obj/screen/plane_master/PM = screenmob.hud_used.plane_masters["[PLANE_SPACE]"]
+	var/atom/movable/screen/plane_master/PM = screenmob.hud_used.plane_masters["[PLANE_SPACE]"]
 	if(screenmob != mymob)
-		C.screen -= locate(/obj/screen/plane_master/parallax_white) in C.screen
+		C.screen -= locate(/atom/movable/screen/plane_master/parallax_white) in C.screen
 		C.screen += PM
 	PM.color = list(
 		0, 0, 0, 0,
@@ -47,9 +47,9 @@
 	var/mob/screenmob = viewmob || mymob
 	var/client/C = screenmob.client
 	C.screen -= (C.parallax_layers_cached)
-	var/obj/screen/plane_master/PM = screenmob.hud_used.plane_masters["[PLANE_SPACE]"]
+	var/atom/movable/screen/plane_master/PM = screenmob.hud_used.plane_masters["[PLANE_SPACE]"]
 	if(screenmob != mymob)
-		C.screen -= locate(/obj/screen/plane_master/parallax_white) in C.screen
+		C.screen -= locate(/atom/movable/screen/plane_master/parallax_white) in C.screen
 		C.screen += PM
 	PM.color = initial(PM.color)
 	C.parallax_layers = null
@@ -100,7 +100,7 @@
 	if(new_parallax_movedir == FALSE)
 		var/animate_time = 0
 		for(var/thing in C.parallax_layers)
-			var/obj/screen/parallax_layer/L = thing
+			var/atom/movable/screen/parallax_layer/L = thing
 			L.icon_state = initial(L.icon_state)
 			L.update_o(C.view)
 			var/T = PARALLAX_LOOP_TIME / L.speed
@@ -123,7 +123,7 @@
 	var/shortesttimer
 	if(!skip_windups)
 		for(var/thing in C.parallax_layers)
-			var/obj/screen/parallax_layer/L = thing
+			var/atom/movable/screen/parallax_layer/L = thing
 
 			var/T = PARALLAX_LOOP_TIME / L.speed
 			if (isnull(shortesttimer))
@@ -147,9 +147,11 @@
 
 
 /datum/hud/proc/update_parallax_motionblur(client/C, animatedir, new_parallax_movedir, matrix/newtransform)
+	if(!C)
+		return
 	C.parallax_animate_timer = FALSE
 	for(var/thing in C.parallax_layers)
-		var/obj/screen/parallax_layer/L = thing
+		var/atom/movable/screen/parallax_layer/L = thing
 		if (!new_parallax_movedir)
 			animate(L)
 			continue
@@ -165,17 +167,19 @@
 
 		animate(L, transform = matrix(), time = T, loop = -1, flags = ANIMATION_END_NOW)
 
-/datum/hud/proc/update_parallax(forced = FALSE)
+/datum/hud/proc/update_parallax(force = FALSE) //Nsv13 - Allowed force updating parallax via overmap ships
 	var/client/C = mymob.client
 	var/turf/posobj = get_turf(C.eye)
 	if(!posobj)
 		return
-	var/area/areaobj = posobj.loc
+	if(!mymob || !SSmapping.z_list || !SSmapping.z_list.len || !mymob.z)
+		return //Something has gone horribly wrong.
+	var/datum/space_level/SL = SSmapping.z_list[mymob.z]
 
 	// Update the movement direction of the parallax if necessary (for shuttles)
-	set_parallax_movedir(areaobj.parallax_movedir, FALSE)
+	var/new_parallax_movedir = (SL.parallax_movedir) ? SL.parallax_movedir : get_area(mymob).parallax_movedir //So that shuttles still have parallax.
+	set_parallax_movedir(new_parallax_movedir, FALSE)
 
-	var/force
 	if(!C.previous_turf || (C.previous_turf.z != posobj.z))
 		C.previous_turf = posobj
 		force = TRUE
@@ -196,13 +200,10 @@
 	C.last_parallax_shift = world.time
 
 	for(var/thing in C.parallax_layers)
-		var/obj/screen/parallax_layer/L = thing
+		var/atom/movable/screen/parallax_layer/L = thing
 		L.update_status(mymob)
 		if (L.view_sized != C.view)
 			L.update_o(C.view)
-		else //Nsv13 - Ftl parallax
-			if(forced)
-				L.update_o(C.view)
 
 		var/change_x
 		var/change_y
@@ -226,7 +227,7 @@
 				L.offset_y += 480
 
 
-		if(!areaobj.parallax_movedir && C.dont_animate_parallax <= world.time && (offset_x || offset_y) && abs(offset_x) <= max(C.parallax_throttle/world.tick_lag+1,1) && abs(offset_y) <= max(C.parallax_throttle/world.tick_lag+1,1) && (round(abs(change_x)) > 1 || round(abs(change_y)) > 1))
+		if(!new_parallax_movedir && C.dont_animate_parallax <= world.time && (offset_x || offset_y) && abs(offset_x) <= max(C.parallax_throttle/world.tick_lag+1,1) && abs(offset_y) <= max(C.parallax_throttle/world.tick_lag+1,1) && (round(abs(change_x)) > 1 || round(abs(change_y)) > 1))
 			L.transform = matrix(1, 0, offset_x*L.speed, 0, 1, offset_y*L.speed)
 			animate(L, transform=matrix(), time = last_delay)
 
@@ -244,7 +245,7 @@
 		var/area/areaobj = get_area(client.eye)
 		hud_used.set_parallax_movedir(areaobj.parallax_movedir, TRUE)
 
-/obj/screen/parallax_layer
+/atom/movable/screen/parallax_layer
 	icon = 'icons/effects/parallax.dmi'
 	var/speed = 1
 	var/offset_x = 0
@@ -252,83 +253,67 @@
 	var/view_sized
 	var/absolute = FALSE
 	var/mob/current_mob //Nsv13 - FTL parallax
+	var/tesselate = TRUE //Nsv13
 	blend_mode = BLEND_ADD
 	plane = PLANE_SPACE_PARALLAX
 	screen_loc = "CENTER-7,CENTER-7"
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 
 
-/obj/screen/parallax_layer/Initialize(mapload, view)
+/atom/movable/screen/parallax_layer/Initialize(mapload, view)
 	. = ..()
 	if (!view)
 		view = world.view
 	update_o(view)
 
-/obj/screen/parallax_layer/proc/update_o(view)
+/atom/movable/screen/parallax_layer/proc/update_o(view)
 	if (!view)
 		view = world.view
-
-	var/list/viewscales = getviewsize(view)
-	var/countx = CEILING((viewscales[1]/2)/(480/world.icon_size), 1)+1
-	var/county = CEILING((viewscales[2]/2)/(480/world.icon_size), 1)+1
-	var/list/new_overlays = new
-	for(var/x in -countx to countx)
-		for(var/y in -county to county)
-			if(x == 0 && y == 0)
-				continue
-			var/mutable_appearance/texture_overlay = mutable_appearance(icon, icon_state)
-			texture_overlay.transform = matrix(1, 0, x*480, 0, 1, y*480)
-			new_overlays += texture_overlay
 	cut_overlays()
-	add_overlay(new_overlays)
+	if(tesselate)
+		var/list/viewscales = getviewsize(view)
+		var/countx = CEILING((viewscales[1]/2)/(480/world.icon_size), 1)+1
+		var/county = CEILING((viewscales[2]/2)/(480/world.icon_size), 1)+1
+		var/list/new_overlays = new
+		for(var/x in -countx to countx)
+			for(var/y in -county to county)
+				if(x == 0 && y == 0)
+					continue
+				var/mutable_appearance/texture_overlay = mutable_appearance(icon, icon_state)
+				texture_overlay.transform = matrix(1, 0, x*480, 0, 1, y*480)
+				new_overlays += texture_overlay
+		add_overlay(new_overlays)
 	view_sized = view
 
-/obj/screen/parallax_layer/proc/update_status(mob/M)
+/atom/movable/screen/parallax_layer/proc/update_status(mob/M)
 	current_mob = M //Nsv13 - FTL parallax
 	return
 
-/obj/screen/parallax_layer/layer_1
+/atom/movable/screen/parallax_layer/layer_1
 	icon_state = "layer1"
 	speed = 0.6
 	layer = 1
 
-/obj/screen/parallax_layer/layer_2
+/atom/movable/screen/parallax_layer/layer_2
 	icon_state = "layer2"
 	speed = 1
 	layer = 2
 
-/obj/screen/parallax_layer/layer_3
+/atom/movable/screen/parallax_layer/layer_3
 	icon_state = "layer3"
 	speed = 1.4
 	layer = 3
 
-/obj/screen/parallax_layer/random
+/atom/movable/screen/parallax_layer/random
 	blend_mode = BLEND_OVERLAY
 	speed = 3
 	layer = 3
 
-/obj/screen/parallax_layer/random/space_gas
+/atom/movable/screen/parallax_layer/random/space_gas
 	icon_state = "random_layer1"
 
-/obj/screen/parallax_layer/random/space_gas/Initialize(mapload, view)
+/atom/movable/screen/parallax_layer/random/space_gas/Initialize(mapload, view)
 	src.add_atom_colour(SSparallax.random_parallax_color, ADMIN_COLOUR_PRIORITY)
 
-/obj/screen/parallax_layer/random/asteroids
+/atom/movable/screen/parallax_layer/random/asteroids
 	icon_state = "random_layer2"
-
-/obj/screen/parallax_layer/planet
-	icon_state = "planet"
-	blend_mode = BLEND_OVERLAY
-	absolute = TRUE //Status of seperation
-	speed = 3
-	layer = 30
-
-/obj/screen/parallax_layer/planet/update_status(mob/M)
-	var/turf/T = get_turf(M)
-	if(is_station_level(T.z))
-		invisibility = 0
-	else
-		invisibility = INVISIBILITY_ABSTRACT
-
-/obj/screen/parallax_layer/planet/update_o()
-	return //Shit wont move

@@ -1,25 +1,11 @@
-/**
- * Munitions computer circuitboard
- */
-/obj/item/circuitboard/computer/ship/munitions_computer
-	name = "circuit board (munitions control computer)"
-	build_path = /obj/machinery/computer/ship/munitions_computer
+/obj/item/ship_weapon/parts //Base item
+	name = "Weapon electronics"
+	desc = "This piece of equipment is a figment of your imagination, let the coders know how you got it!"
+	icon = 'icons/obj/module.dmi'
+	icon_state = "mcontroller"
 
 /**
- * PDC mount circuitboard
- */
-/obj/item/circuitboard/machine/pdc_mount
-	name = "circuit board (pdc mount)"
-	build_path = /obj/machinery/ship_weapon/pdc_mount
-	req_components = list(
-		/obj/item/stock_parts/manipulator = 4,
-		/obj/item/stock_parts/capacitor = 2,
-		/obj/item/stock_parts/matter_bin = 3,
-		/obj/item/ship_weapon/parts/firing_electronics = 1
-	)
-
-/**
- * Firing electronics - used for pdcs, torp tubes, and railguns
+ * Firing electronics - used in construction of <s>new</s> old munitions machinery
  */
 /obj/item/ship_weapon/parts/firing_electronics
 	name = "firing electronics"
@@ -51,5 +37,19 @@
 	righthand_file = 'nsv13/icons/mob/inhands/weapons/bombs_righthand.dmi'
 
 /obj/item/ship_weapon/parts/railgun_rail/Initialize()
+	..()
+	AddComponent(/datum/component/twohanded/required)
+
+/**
+ * MAC Barrel
+ */
+/obj/item/ship_weapon/parts/mac_barrel
+	name = "barrel"
+	icon = 'nsv13/icons/obj/items_and_weapons.dmi'
+	icon_state = "mac_barrel"
+	lefthand_file = 'nsv13/icons/mob/inhands/weapons/bombs_lefthand.dmi'
+	righthand_file = 'nsv13/icons/mob/inhands/weapons/bombs_righthand.dmi'
+
+/obj/item/ship_weapon/parts/mac_barrel/Initialize()
 	..()
 	AddComponent(/datum/component/twohanded/required)

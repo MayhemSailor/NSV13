@@ -72,8 +72,8 @@
 /datum/atom_hud/ai_detector/add_hud_to(mob/M)
 	..()
 	if(M && (hudusers.len == 1))
-		for(var/V in GLOB.aiEyes)
-			var/mob/camera/aiEye/E = V
+		for(var/V in GLOB.ai_eyes)
+			var/mob/camera/ai_eye/E = V
 			E.update_ai_detect_hud()
 
 /* MED/SEC/DIAG HUD HOOKS */
@@ -194,6 +194,8 @@
 		holder.icon_state = "huddead"
 	else
 		switch(virus_threat)
+			if(DISEASE_SEVERITY_PANDEMIC)
+				holder.icon_state = "hudill6"
 			if(DISEASE_SEVERITY_BIOHAZARD)
 				holder.icon_state = "hudill5"
 			if(DISEASE_SEVERITY_DANGEROUS)
@@ -208,6 +210,8 @@
 				holder.icon_state = "hudill0"
 			if(DISEASE_SEVERITY_POSITIVE)
 				holder.icon_state = "hudbuff"
+			if(DISEASE_SEVERITY_BENEFICIAL)
+				holder.icon_state = "hudbuff2"
 			if(null)
 				holder.icon_state = "hudhealthy"
 
@@ -226,6 +230,7 @@
 	if(wear_id?.GetID())
 		holder.icon_state = "hud[ckey(wear_id.GetJobName())]"
 	sec_hud_set_security_status()
+	set_squad_hud()
 
 /mob/living/proc/sec_hud_set_implants()
 	var/image/holder
@@ -243,7 +248,7 @@
 			var/icon/IC = icon(icon, icon_state, dir)
 			holder.pixel_y = IC.Height() - world.icon_size
 			holder.icon_state = "hud_imp_chem"
-	if(HAS_TRAIT(src, TRAIT_MINDSHIELD))
+	if(HAS_TRAIT(src, TRAIT_MINDSHIELD) && !istype(src.get_item_by_slot(ITEM_SLOT_HEAD), /obj/item/clothing/head/foilhat)) //tinfoil hats interfere with implant detection
 		holder = hud_list[IMPLOYAL_HUD]
 		var/icon/IC = icon(icon, icon_state, dir)
 		holder.pixel_y = IC.Height() - world.icon_size
@@ -258,7 +263,7 @@
 		var/datum/data/record/R = find_record("name", perpname, GLOB.data_core.security)
 		if(R)
 			switch(R.fields["criminal"])
-				if("*Arrest*")
+				if("Arrest")
 					holder.icon_state = "hudwanted"
 					return
 				if("Incarcerated")
@@ -269,6 +274,12 @@
 					return
 				if("Discharged")
 					holder.icon_state = "huddischarged"
+					return
+				if("Search")
+					holder.icon_state = "hudsearch"
+					return
+				if("Monitor")
+					holder.icon_state = "hudmonitor"
 					return
 	holder.icon_state = null
 

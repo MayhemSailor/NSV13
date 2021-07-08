@@ -15,9 +15,7 @@
 	speed = 0
 	maxHealth = 40
 	health = 40
-	harm_intent_damage = 10
-	melee_damage_lower = 15
-	melee_damage_upper = 15
+	melee_damage = 15
 	del_on_death = 1
 	emote_see = list("weeps silently", "groans", "mumbles")
 	attacktext = "grips"
@@ -49,7 +47,13 @@
 				name = "ghost of [pick(GLOB.first_names_male)] [pick(GLOB.last_names)]"
 			if(1)
 				name = "ghost of [pick(GLOB.first_names_female)] [pick(GLOB.last_names)]"
+	AddComponent(/datum/component/tracking_beacon, "ghost", null, null, TRUE, "#9e4d91", TRUE, TRUE)
 
+/mob/living/simple_animal/hostile/retaliate/ghost/Destroy()
+	. = ..()
+	var/datum/component/tracking_beacon/beacon = GetComponent(/datum/component/tracking_beacon)
+	if(beacon)
+		qdel(beacon)
 
 /mob/living/simple_animal/hostile/retaliate/ghost/proc/give_hair()
 	if(ghost_hair_style != null)

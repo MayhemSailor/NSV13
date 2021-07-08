@@ -1,20 +1,16 @@
 /obj/machinery/computer/ship/fighter_controller
-	name = "Fighter control console"
+	name = "fighter control console"
 	desc = "A computer which allows you to remotely modify fighter system settings. Its power should not be understated."
 	icon_screen = "fighter_control"
 	req_access = list(ACCESS_MAA)
 	circuit = /obj/item/circuitboard/computer/ship/fighter_controller
-	var/list/valid_filters = list("Only Occupied Ship", "Raptor", "Viper") //This list works by looking at what the intial value of a fighter's name was to determine its class. We may want to move this over to a "class" var. Karmic when you add P2, you need to change this list. Ty
+	var/list/valid_filters = list("Only Occupied Ship", "Su-818 Rapier", "Su-410 Scimitar", "Su-437 Sabre") //This list works by looking at what the intial value of a fighter's name was to determine its class. We may want to move this over to a "class" var
 	var/faction = "nanotrasen" //Change this to match the faction of your fighters.
 	var/list/current_filters = null //Defaults to showing every kind of fighter. If a fighter type is "in current_filters" then it's visible
 
 /obj/machinery/computer/ship/fighter_controller/Initialize()
 	. = ..()
 	current_filters = valid_filters.Copy()
-
-/obj/item/circuitboard/computer/ship/fighter_controller
-	name = "circuit board (fighter control computer)"
-	build_path = /obj/machinery/computer/ship/fighter_controller
 
 /obj/machinery/computer/ship/fighter_controller/emag_act(mob/user)
 	if(obj_flags & EMAGGED)
@@ -93,8 +89,8 @@
 					log_game("\<span class='notice'>[key_name(ui.user)] forcefully [(OM.weapon_safety) ? "Enabled" : "Disabled"] [OM]'s weapon safeties from a [name] in [get_area(src)]!</span>")
 					break
 
-/obj/machinery/computer/ship/fighter_controller/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = 0, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state) // Remember to use the appropriate state.
-	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
+/obj/machinery/computer/ship/fighter_controller/ui_interact(mob/user, datum/tgui/ui)
+	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, ui_key, "fighter_controller", name, 560, 600, master_ui, state)
+		ui = new(user, src, "FighterController")
 		ui.open()

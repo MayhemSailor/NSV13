@@ -36,6 +36,7 @@
 	desc = "It's better than bad, it's good!"
 	icon_state = "logs"
 	force = 5
+	block_upgrade_walk = 1
 	throwforce = 5
 	w_class = WEIGHT_CLASS_NORMAL
 	throw_speed = 2
@@ -45,13 +46,12 @@
 	var/plank_name = "wooden planks"
 	var/static/list/accepted = typecacheof(list(/obj/item/reagent_containers/food/snacks/grown/tobacco,
 	/obj/item/reagent_containers/food/snacks/grown/tea,
-	/obj/item/reagent_containers/food/snacks/grown/ambrosia/vulgaris,
-	/obj/item/reagent_containers/food/snacks/grown/ambrosia/deus,
+	/obj/item/reagent_containers/food/snacks/grown/ambrosia,
 	/obj/item/reagent_containers/food/snacks/grown/wheat))
 
 /obj/item/grown/log/attackby(obj/item/W, mob/user, params)
-	if(W.sharpness)
-		user.show_message("<span class='notice'>You make [plank_name] out of \the [src]!</span>", 1)
+	if(W.is_sharp())
+		user.show_message("<span class='notice'>You make [plank_name] out of \the [src]!</span>", MSG_VISUAL)
 		var/seed_modifier = 0
 		if(seed)
 			seed_modifier = round(seed.potency / 25)
@@ -97,7 +97,7 @@
 
 /obj/item/grown/log/steel/CheckAccepted(obj/item/I)
 	return FALSE
-obj/item/seeds/bamboo
+/obj/item/seeds/bamboo
 	name = "pack of bamboo seeds"
 	desc = "Plant known for their flexible and resistant logs."
 	icon_state = "seed-bamboo"
@@ -155,9 +155,16 @@ obj/item/seeds/bamboo
 	var/burn_icon = "bonfire_on_fire" //for a softer more burning embers icon, use "bonfire_warm"
 	var/grill = FALSE
 	var/fire_stack_strength = 5
+	var/needs_oxygen = TRUE
+
+/obj/structure/bonfire/bluespace
+	needs_oxygen = FALSE
 
 /obj/structure/bonfire/dense
 	density = TRUE
+
+/obj/structure/bonfire/dense/askwalker
+	needs_oxygen = FALSE
 
 /obj/structure/bonfire/prelit/Initialize()
 	. = ..()
@@ -228,13 +235,12 @@ obj/item/seeds/bamboo
 	if(isopenturf(loc))
 		var/turf/open/O = loc
 		if(O.air)
-			var/loc_gases = O.air.gases
-			if(loc_gases[/datum/gas/oxygen][MOLES] >= 5)
+			if(O.air.get_moles(/datum/gas/oxygen) > 13)
 				return TRUE
 	return FALSE
 
 /obj/structure/bonfire/proc/StartBurning()
-	if(!burning && CheckOxygen())
+	if(!burning && (!needs_oxygen || CheckOxygen()))
 		icon_state = burn_icon
 		burning = TRUE
 		set_light(6)
@@ -276,7 +282,7 @@ obj/item/seeds/bamboo
 			O.microwave_act()
 
 /obj/structure/bonfire/process()
-	if(!CheckOxygen())
+	if(needs_oxygen && !CheckOxygen())
 		extinguish()
 		return
 	if(!grill)

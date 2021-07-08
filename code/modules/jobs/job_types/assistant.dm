@@ -2,7 +2,7 @@
 Assistant
 */
 /datum/job/assistant
-	title = "Assistant"
+	title = "Midshipman" //Nsv13 - Crayon eaters
 	flag = ASSISTANT
 	department_flag = CIVILIAN
 	faction = "Station"
@@ -10,6 +10,7 @@ Assistant
 	spawn_positions = 5
 	supervisors = "absolutely everyone"
 	selection_color = "#dddddd"
+	chat_color = "#bdbdbd"
 	access = list()			//See /datum/job/assistant/get_access()
 	minimal_access = list()	//See /datum/job/assistant/get_access()
 	outfit = /datum/outfit/job/assistant_ship //Nsv13 - Assistant resprite
@@ -26,7 +27,7 @@ Assistant
 		return ..()
 
 /datum/outfit/job/assistant
-	name = "Assistant"
+	name = "Midshipman" //Nsv13 - Crayon eaters
 	jobtype = /datum/job/assistant
 
 /datum/outfit/job/assistant/pre_equip(mob/living/carbon/human/H)

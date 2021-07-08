@@ -11,22 +11,32 @@
 
 	firing_sound = 'nsv13/sound/effects/ship/plasma.ogg'
 	load_sound = 'nsv13/sound/effects/ship/freespace2/m_load.wav'
-	fire_mode = FIRE_MODE_TORPEDO
+	fire_mode = FIRE_MODE_AMS
 	ammo_type = /obj/item/ship_weapon/ammunition/torpedo
-	fire_mode = 2
-	weapon_type = new/datum/ship_weapon/torpedo_launcher
 
 /obj/machinery/ship_weapon/torpedo_launcher/north
 	dir = NORTH
+	pixel_x = -16
+	pixel_y = -32
+	bound_height = 96
+	bound_width = 32
 
 /obj/machinery/ship_weapon/torpedo_launcher/south
 	dir = SOUTH
+	pixel_x = -16
+	pixel_y = -64
+	bound_height = 96
+	bound_width = 32
+	bound_y = -64
 
 /obj/machinery/ship_weapon/torpedo_launcher/east
 	dir = EAST
 
 /obj/machinery/ship_weapon/torpedo_launcher/west
 	dir = WEST
+	pixel_x = -64
+	pixel_y = -74
+	bound_x = -64
 
 /obj/machinery/ship_weapon/torpedo_launcher/Initialize()
 	..()
@@ -67,7 +77,11 @@
 	// We have different sprites and behaviors for each torpedo
 	var/obj/item/ship_weapon/ammunition/torpedo/T = chambered
 	if(T)
-		if(istype(T, /obj/item/projectile/bullet/torpedo/dud)) //Some brainlet MAA loaded an incomplete torp
-			linked.fire_projectile(T.projectile_type, target, homing = FALSE, speed=T.speed, explosive = TRUE)
+		if(istype(T, /obj/item/projectile/guided_munition/torpedo/dud)) //Some brainlet MAA loaded an incomplete torp
+			linked.fire_projectile(T.projectile_type, target, homing = FALSE, lateral=TRUE)
 		else
-			linked.fire_projectile(T.projectile_type, target, homing = TRUE, speed=T.speed, explosive = TRUE)
+			var/obj/item/projectile/P = linked.fire_projectile(T.projectile_type, target, homing = TRUE, lateral = TRUE)
+			if(T.contents.len)
+				for(var/atom/movable/AM in T.contents)
+					to_chat(AM, "<span class='warning'>You feel slightly nauseous as you're shot out into space...</span>")
+					AM.forceMove(P)

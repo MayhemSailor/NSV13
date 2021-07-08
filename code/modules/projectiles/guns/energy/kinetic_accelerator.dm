@@ -19,6 +19,7 @@
 	can_bayonet = TRUE
 	knife_x_offset = 20
 	knife_y_offset = 12
+	block_upgrade_walk = 1
 
 	var/max_mod_capacity = 100
 	var/list/modkits = list()
@@ -383,10 +384,8 @@
 		return
 	new /obj/effect/temp_visual/explosion/fast(target_turf)
 	if(turf_aoe)
-		for(var/T in RANGE_TURFS(1, target_turf) - target_turf)
-			if(ismineralturf(T))
-				var/turf/closed/mineral/M = T
-				M.gets_drilled(K.firer)
+		for(var/turf/closed/mineral/M in RANGE_TURFS(1, target_turf) - target_turf)
+			M.gets_drilled(K.firer)
 	if(modifier)
 		for(var/mob/living/L in range(1, target_turf) - K.firer - target)
 			var/armor = L.run_armor_check(K.def_zone, K.flag, "", "", K.armour_penetration)

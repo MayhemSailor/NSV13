@@ -22,7 +22,8 @@ GLOBAL_LIST_INIT(medical_positions, list(
 	"Geneticist",
 	"Virologist",
 	"Paramedic",
-	"Chemist"))
+	"Chemist",
+	"Brig Physician"))
 
 
 GLOBAL_LIST_INIT(science_positions, list(
@@ -49,15 +50,22 @@ GLOBAL_LIST_INIT(civilian_positions, list(
 	"Chaplain",
 	"Clown",
 	"Mime",
-	"Assistant"))
+	"Midshipman"))
 
-
+GLOBAL_LIST_INIT(gimmick_positions, list(
+	"Gimmick",
+	"Barber",
+	"Stage Magician",
+	"Debtor",
+	"Psychiatrist",
+	"VIP"))
+ //Nsv13 - Crayon eaters & MPs
 GLOBAL_LIST_INIT(security_positions, list(
 	"Head of Security",
 	"Warden",
 	"Detective",
-	"Security Officer",
-	"Brig Physician"))
+	"Military Police",
+	"Deputy"))
 
 
 GLOBAL_LIST_INIT(nonhuman_positions, list(
@@ -70,14 +78,14 @@ GLOBAL_LIST_INIT(nonhuman_positions, list(
 GLOBAL_LIST_INIT(munitions_positions, list(
 	"Master At Arms",
 	"Munitions Technician",
-	"Flight Leader",
-	"Fighter Pilot",
+	"Deck Technician",
+	"Pilot",
 	"Air Traffic Controller",
 	"Bridge Staff"))
 
 
 GLOBAL_LIST_INIT(exp_jobsmap, list(
-	EXP_TYPE_CREW = list("titles" = command_positions | engineering_positions | medical_positions | science_positions | supply_positions | security_positions | civilian_positions | munitions_positions | list("AI","Cyborg")) , // crew positions
+	EXP_TYPE_CREW = list("titles" = command_positions | engineering_positions | medical_positions | science_positions | supply_positions | security_positions | civilian_positions | gimmick_positions | munitions_positions | list("AI","Cyborg")), //NSV13 - added munitions
 	EXP_TYPE_COMMAND = list("titles" = command_positions),
 	EXP_TYPE_ENGINEERING = list("titles" = engineering_positions),
 	EXP_TYPE_MEDICAL = list("titles" = medical_positions),
@@ -85,8 +93,9 @@ GLOBAL_LIST_INIT(exp_jobsmap, list(
 	EXP_TYPE_SUPPLY = list("titles" = supply_positions),
 	EXP_TYPE_SECURITY = list("titles" = security_positions),
 	EXP_TYPE_SILICON = list("titles" = list("AI","Cyborg")),
-	EXP_TYPE_SERVICE = list("titles" = civilian_positions),
-	EXP_TYPE_MUNITIONS = list("titles" = munitions_positions),
+	EXP_TYPE_SERVICE = list("titles" = civilian_positions | gimmick_positions),
+	EXP_TYPE_GIMMICK = list("titles" = gimmick_positions),
+	EXP_TYPE_MUNITIONS = list("titles" = munitions_positions) //NSV13 - added munitions
 ))
 
 GLOBAL_LIST_INIT(exp_specialmap, list(

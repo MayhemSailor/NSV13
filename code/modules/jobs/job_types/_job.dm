@@ -2,6 +2,9 @@
 	//The name of the job , used for preferences, bans and more. Make sure you know what you're doing before changing this.
 	var/title = "NOPE"
 
+	//Calculated in /New
+	var/say_span = ""
+
 	//Job access. The use of minimal_access or access is determined by a config setting: config.jobs_have_minimal_access
 	var/list/minimal_access = list()		//Useful for servers which prefer to only have access given to the places a job absolutely needs (Larger server population)
 	var/list/access = list()				//Useful for servers which either have fewer players, so each person needs to fill more than one role, or servers which like to give more access, so players can't hide forever in their super secure departments (I'm looking at you, chemistry!)
@@ -35,6 +38,8 @@
 	//Sellection screen color
 	var/selection_color = "#ffffff"
 
+	//Overhead chat message colour
+	var/chat_color = "#ffffff"
 
 	//If this is set to 1, a text is printed to the player when jobs are assigned, telling him that he should let admins know that he has to disconnect.
 	var/req_admin_notify
@@ -60,8 +65,13 @@
 
 	var/display_order = JOB_DISPLAY_ORDER_DEFAULT
 
-	var/tmp/list/gear_leftovers = list()
+	var/gimmick = FALSE //least hacky way i could think of for this
+
 	var/display_rank = "" //nsv13 - Displays the player's actual rank alongside their name, such as GSGT Sergei Koralev
+
+/datum/job/New()
+	. = ..()
+	say_span = replacetext(lowertext(title), " ", "")
 
 //Only override this proc, unless altering loadout code. Loadouts act on H but get info from M
 //H is usually a human unless an /equip override transformed it
@@ -75,7 +85,8 @@
 	if(!ishuman(H))
 		return
 	var/mob/living/carbon/human/human = H
-	if(M.client && (M.client.prefs.equipped_gear && M.client.prefs.equipped_gear.len))
+	var/list/gear_leftovers = list()
+	if(M.client && LAZYLEN(M.client.prefs.equipped_gear))
 		for(var/gear in M.client.prefs.equipped_gear)
 			var/datum/gear/G = GLOB.gear_datums[gear]
 			if(G)
@@ -86,21 +97,37 @@
 				else if(!G.allowed_roles)
 					permitted = TRUE
 				else
+					to_chat(M, "<span class='warning'>Your current role does not permit you to spawn with [gear]!</span>")
 					permitted = FALSE
 
 				if(G.species_blacklist && (human.dna.species.id in G.species_blacklist))
+					to_chat(M, "<span class='warning'>Your current species does not permit you to spawn with [gear]!</span>")
 					permitted = FALSE
 
 				if(G.species_whitelist && !(human.dna.species.id in G.species_whitelist))
 					permitted = FALSE
 
+				if(G.unlocktype == GEAR_DONATOR) //Strip out donation items if the patreon has expired or they somehow have someone else's gear datum.
+					if(M.client.ckey != G.ckey)
+						to_chat(M, "<span class='warning'>You somehow have someone else's donator item! Call a coder. Item: [gear]</span>")
+						message_admins("[ADMIN_LOOKUPFLW(M)] Somehow equipped the donator gear of [G.ckey]. It has been removed.")
+						M.client.prefs.equipped_gear -= gear
+						M.client.prefs.purchased_gear -= gear
+						permitted = FALSE
+					if(!(M.client.ckey in config.active_donators))
+						to_chat(M, "<span class='warning'>Your patreon has expired! Your donator item has been removed. Item: [gear]</span>")
+						M.client.prefs.equipped_gear -= gear
+						M.client.prefs.purchased_gear -= gear
+						permitted = FALSE
+
 				if(!permitted)
-					to_chat(M, "<span class='warning'>Your current species or role does not permit you to spawn with [gear]!</span>")
+					to_chat(M, "<span class='warning'>Your current species or role does not permit you to spawn with [G.display_name]!</span>")
 					continue
+
 
 				if(G.slot)
 					if(H.equip_to_slot_or_del(G.spawn_item(H), G.slot))
-						to_chat(M, "<span class='notice'>Equipping you with [gear]!</span>")
+						to_chat(M, "<span class='notice'>Equipping you with [G.display_name]!</span>")
 					else
 						gear_leftovers += G
 				else
@@ -111,7 +138,7 @@
 
 	if(gear_leftovers.len)
 		for(var/datum/gear/G in gear_leftovers)
-			var/metadata = M.client.prefs.equipped_gear[G.display_name]
+			var/metadata = M.client.prefs.equipped_gear[G.id]
 			var/item = G.spawn_item(null, metadata)
 			var/atom/placed_in = human.equip_or_collect(item)
 
@@ -137,8 +164,6 @@
 
 			to_chat(M, "<span class='danger'>Failed to locate a storage object on your mob, either you spawned with no hands free and no backpack or this is a bug.</span>")
 			qdel(item)
-
-		qdel(gear_leftovers)
 
 /datum/job/proc/announce(mob/living/carbon/human/H)
 	if(head_announce)
@@ -218,7 +243,7 @@
 		return 0
 	if(!SSdbcore.Connect())
 		return 0 //Without a database connection we can't get a player's age so we'll assume they're old enough for all jobs
-	if(!isnum(minimal_player_age))
+	if(!isnum_safe(minimal_player_age))
 		return 0
 
 	return max(0, minimal_player_age - C.player_age)
@@ -249,7 +274,7 @@
 	var/satchel  = /obj/item/storage/backpack/satchel
 	var/duffelbag = /obj/item/storage/backpack/duffelbag
 
-	var/pda_slot = SLOT_BELT
+	var/pda_slot = ITEM_SLOT_BELT
 
 /datum/outfit/job/pre_equip(mob/living/carbon/human/H, visualsOnly = FALSE)
 	switch(H.backbag)

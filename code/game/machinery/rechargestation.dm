@@ -1,6 +1,6 @@
 /obj/machinery/recharge_station
 	name = "cyborg recharging station"
-	desc = "This device recharges cyborgs and resupplies them with materials."
+	desc = "This device recharges cyborgs and resupplies their materials."
 	icon = 'icons/obj/objects.dmi'
 	icon_state = "borgcharger0"
 	density = FALSE
@@ -22,7 +22,7 @@
 	recharge_speed = 0
 	repairs = 0
 	for(var/obj/item/stock_parts/capacitor/C in component_parts)
-		recharge_speed += C.rating * 100
+		recharge_speed += (C.rating * 100) + 66 // Starting boost, but inconsequential at t4
 	for(var/obj/item/stock_parts/manipulator/M in component_parts)
 		repairs += M.rating - 1
 	for(var/obj/item/stock_parts/cell/C in component_parts)
@@ -31,9 +31,9 @@
 /obj/machinery/recharge_station/examine(mob/user)
 	. = ..()
 	if(in_range(user, src) || isobserver(user))
-		. += "<span class='notice'>The status display reads: Recharging <b>[recharge_speed]J</b> per cycle.<span>"
+		. += "<span class='notice'>The status display reads: Recharging <b>[recharge_speed]J</b> per cycle.</span>"
 		if(repairs)
-			. += "<span class='notice'>[src] has been upgraded to support automatic repairs.<span>"
+			. += "<span class='notice'>[src] has been upgraded to support automatic repairs.</span>"
 
 /obj/machinery/recharge_station/process()
 	if(!is_operational())
@@ -80,14 +80,12 @@
 
 /obj/machinery/recharge_station/open_machine()
 	. = ..()
-	if(iscyborg(occupant) || isethereal(occupant))
-		use_power = IDLE_POWER_USE
+	use_power = IDLE_POWER_USE
 
 /obj/machinery/recharge_station/close_machine()
 	. = ..()
 	if(occupant)
-		if(iscyborg(occupant) || isethereal(occupant))
-			use_power = ACTIVE_POWER_USE
+		use_power = ACTIVE_POWER_USE //It always tries to charge, even if it can't.
 		add_fingerprint(occupant)
 
 /obj/machinery/recharge_station/update_icon()
@@ -118,7 +116,7 @@
 		var/mob/living/carbon/human/H = occupant
 		var/datum/species/ethereal/E = H.dna?.species
 		if(E)
-			E.adjust_charge(recharge_speed / 40) //Around 5 per process if unupgraded
+			E.adjust_charge(recharge_speed / 30) //Around 5 per process if unupgraded
 			if(repairs && H.blood_volume < BLOOD_VOLUME_NORMAL)
 				H.reagents.add_reagent(/datum/reagent/consumable/liquidelectricity,repairs*0.2)
 
@@ -126,5 +124,5 @@
 	if(occupant)
 		var/mob/living/silicon/robot/R = occupant
 		if(R?.module)
-			var/coeff = recharge_speed * 0.005
+			var/coeff = recharge_speed * 0.025
 			R.module.respawn_consumable(R, coeff)

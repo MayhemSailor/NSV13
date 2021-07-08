@@ -64,21 +64,21 @@
 
 /obj/item/organ/brain/dullahan
 	decoy_override = TRUE
-	vital = FALSE
+	organ_flags = 0
 
 /obj/item/organ/tongue/dullahan
 	zone = "abstract"
+	modifies_speech = TRUE
 
-/obj/item/organ/tongue/dullahan/TongueSpeech(var/message)
+/obj/item/organ/tongue/dullahan/handle_speech(datum/source, list/speech_args)
 	if(ishuman(owner))
 		var/mob/living/carbon/human/H = owner
 		if(H.dna.species.id == "dullahan")
 			var/datum/species/dullahan/D = H.dna.species
 			if(isobj(D.myhead.loc))
 				var/obj/O = D.myhead.loc
-				O.say(message)
-	message = ""
-	return message
+				O.say(speech_args[SPEECH_MESSAGE])
+	speech_args[SPEECH_MESSAGE] = ""
 
 /obj/item/organ/ears/dullahan
 	zone = "abstract"
@@ -121,10 +121,10 @@
 		. = PROCESS_KILL
 		qdel(src)
 
-/obj/item/dullahan_relay/Hear(message, atom/movable/speaker, message_language, raw_message, radio_freq, list/spans, message_mode)
+/obj/item/dullahan_relay/Hear(message, atom/movable/speaker, message_language, raw_message, radio_freq, list/spans, list/message_mods = list())
 	. = ..()
 	if(!QDELETED(owner))
-		message = compose_message(speaker, message_language, raw_message, radio_freq, spans, message_mode)
+		message = compose_message(speaker, message_language, raw_message, radio_freq, spans, message_mods)
 		to_chat(owner,message)
 	else
 		qdel(src)

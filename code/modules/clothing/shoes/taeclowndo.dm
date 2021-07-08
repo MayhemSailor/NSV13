@@ -13,9 +13,7 @@
 	if(!ishuman(user))
 		return
 	var/mob/living/carbon/human/H = user
-	if(!(HAS_TRAIT(src, TRAIT_CLUMSY)) && !(H.mind && H.mind.assigned_role == "Clown"))
-		return
-	if(slot == SLOT_SHOES)
+	if(slot == ITEM_SLOT_FEET)
 		spells = new
 		for(var/spell in spelltypes)
 			var/obj/effect/proc_holder/spell/S = new spell
@@ -29,7 +27,7 @@
 	if(!ishuman(user))
 		return
 	var/mob/living/carbon/human/H = user
-	if(H.get_item_by_slot(SLOT_SHOES) == src)
+	if(H.get_item_by_slot(ITEM_SLOT_FEET) == src)
 		for(var/spell in spells)
 			var/obj/effect/proc_holder/spell/S = spell
 			H.mind.spell_list.Remove(S)

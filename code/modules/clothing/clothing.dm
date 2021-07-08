@@ -5,6 +5,7 @@
 	integrity_failure = 80
 	var/damaged_clothes = 0 //similar to machine's BROKEN stat and structure's broken var
 	var/flash_protect = 0		//What level of bright light protection item has. 1 = Flashers, Flashes, & Flashbangs | 2 = Welding | -1 = OH GOD WELDING BURNT OUT MY RETINAS
+	var/bang_protect = 0		//what level of sound protection the item has. 1 is the level of a normal bowman.
 	var/tint = 0				//Sets the item's level of visual impairment tint, normally set to the same as flash_protect
 	var/up = 0					//but separated to allow items to protect but not impair vision, like space helmets
 	var/visor_flags = 0			//flags that are added/removed when an item is adjusted up/down
@@ -20,7 +21,7 @@
 	var/active_sound = null
 	var/toggle_cooldown = null
 	var/cooldown = 0
-	var/scan_reagents = 0 //Can the wearer see reagents while it's equipped?
+	var/envirosealed = FALSE //is it safe for plasmamen
 
 	var/blocks_shove_knockdown = FALSE //Whether wearing the clothing item blocks the ability for shove to knock down.
 
@@ -39,6 +40,8 @@
 	var/dynamic_hair_suffix = ""//head > mask for head hair
 	var/dynamic_fhair_suffix = ""//mask > head for facial hair
 
+	var/high_pressure_multiplier = 1
+	var/static/list/high_pressure_multiplier_types = list("melee", "bullet", "laser", "energy", "bomb")
 
 /obj/item/clothing/Initialize()
 	if(CHECK_BITFIELD(clothing_flags, VOICEBOX_TOGGLABLE))
@@ -54,8 +57,8 @@
 	if(ismecha(M.loc)) // stops inventory actions in a mech
 		return
 
-	if(!M.incapacitated() && loc == M && istype(over_object, /obj/screen/inventory/hand))
-		var/obj/screen/inventory/hand/H = over_object
+	if(!M.incapacitated() && loc == M && istype(over_object, /atom/movable/screen/inventory/hand))
+		var/atom/movable/screen/inventory/hand/H = over_object
 		if(M.putItemFromInventoryInHandIfPossible(src, H.held_index))
 			add_fingerprint(usr)
 
@@ -77,8 +80,8 @@
 		return ..()
 
 /obj/item/clothing/attackby(obj/item/W, mob/user, params)
-	if(damaged_clothes && istype(W, /obj/item/stack/sheet/cloth))
-		var/obj/item/stack/sheet/cloth/C = W
+	if(damaged_clothes && istype(W, /obj/item/stack/sheet/cotton/cloth))
+		var/obj/item/stack/sheet/cotton/cloth/C = W
 		C.use(1)
 		update_clothes_damaged_state(FALSE)
 		obj_integrity = max_integrity
@@ -105,7 +108,7 @@
 	..()
 	if (!istype(user))
 		return
-	if(slot_flags & slotdefine2slotbit(slot)) //Was equipped to a valid slot for this item?
+	if(slot_flags & slot) //Was equipped to a valid slot for this item?
 		if (LAZYLEN(user_vars_to_edit))
 			for(var/variable in user_vars_to_edit)
 				if(variable in user.vars)
@@ -121,6 +124,17 @@
 			. += "[src] offers the wearer some protection from fire."
 		if (1601 to 35000)
 			. += "[src] offers the wearer robust protection from fire."
+	switch(armor.getRating("stamina"))
+		if(1 to 20)
+			. += "[src] looks like it provides the wearer minor protection against stuns."
+		if(21 to 30)
+			. += "[src] looks like it provides the wearer some protection against stuns."
+		if(31 to 50)
+			. += "[src] looks like it provides the wearer excellent protection against stuns."
+		if(51 to 70)
+			. += "[src] looks like it provides the wearer robust protection against stuns."
+		if(71 to 200)
+			. += "[src] looks like it provides the wearer brilliant protection against stuns."
 	if(damaged_clothes)
 		. += "<span class='warning'>It looks damaged!</span>"
 	var/datum/component/storage/pockets = GetComponent(/datum/component/storage)
@@ -223,10 +237,13 @@ BLIND     // can't see anything
 		if(H.w_uniform == src)
 			H.update_suit_sensors()
 
-/obj/item/clothing/under/AltClick(mob/user)
-	if(..())
-		return 1
+/obj/item/clothing/under/attack_hand(mob/user)
+	if(attached_accessory && ispath(attached_accessory.pocket_storage_component_path) && loc == user)
+		attached_accessory.attack_hand(user)
+		return
+	..()
 
+/obj/item/clothing/under/AltClick(mob/user)
 	if(!istype(user) || !user.canUseTopic(src, BE_CLOSE, ismonkey(user)))
 		return
 	else
@@ -261,12 +278,14 @@ BLIND     // can't see anything
 		return
 	adjusted = !adjusted
 	if(adjusted)
+		envirosealed = FALSE
 		if(fitted != FEMALE_UNIFORM_TOP)
 			fitted = NO_FEMALE_UNIFORM
 		if(!alt_covers_chest) // for the special snowflake suits that expose the chest when adjusted
 			body_parts_covered &= ~CHEST
 	else
 		fitted = initial(fitted)
+		envirosealed = initial(envirosealed)
 		if(!alt_covers_chest)
 			body_parts_covered |= CHEST
 	return adjusted
@@ -298,6 +317,15 @@ BLIND     // can't see anything
 	if(visor_vars_to_toggle & VISOR_TINT)
 		tint ^= initial(tint)
 
+/obj/item/clothing/head/helmet/space/plasmaman/visor_toggling() //handles all the actual toggling of flags
+	up = !up
+	clothing_flags ^= visor_flags
+	flags_inv ^= visor_flags_inv
+	icon_state = "[initial(icon_state)]"
+	if(visor_vars_to_toggle & VISOR_FLASHPROTECT)
+		flash_protect ^= initial(flash_protect)
+	if(visor_vars_to_toggle & VISOR_TINT)
+		tint ^= initial(tint)
 
 /obj/item/clothing/proc/can_use(mob/user)
 	if(user && ismob(user))
@@ -315,3 +343,13 @@ BLIND     // can't see anything
 		deconstruct(FALSE)
 	else
 		..()
+
+/obj/item/clothing/get_armor_rating(d_type, mob/wearer)
+	. = ..()
+	if(high_pressure_multiplier == 1)
+		return
+	var/turf/T = get_turf(wearer)
+	if(!T || !(d_type in high_pressure_multiplier_types))
+		return
+	if(!lavaland_equipment_pressure_check(T))
+		. *= high_pressure_multiplier

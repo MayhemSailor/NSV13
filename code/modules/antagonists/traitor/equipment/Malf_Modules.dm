@@ -13,8 +13,11 @@ GLOBAL_LIST_INIT(blacklisted_malf_machines, typecacheof(list(
 		/obj/machinery/syndicatebomb/badmin/clown,
 		/obj/machinery/syndicatebomb/empty,
 		/obj/machinery/syndicatebomb/self_destruct,
-		/obj/machinery/syndicatebomb/training
-	)))
+		/obj/machinery/syndicatebomb/training,
+		/obj/machinery/atmospherics/components/binary/stormdrive_reactor,
+		/obj/machinery/armour_plating_nanorepair_well,
+		/obj/machinery/armour_plating_nanorepair_pump
+	))) //NSV13 - stormdrive, APNP/APNW included here
 
 //The malf AI action subtype. All malf actions are subtypes of this.
 /datum/action/innate/ai
@@ -97,7 +100,7 @@ GLOBAL_LIST_INIT(blacklisted_malf_machines, typecacheof(list(
 	var/datum/action/innate/ai/ranged/attached_action
 
 /obj/effect/proc_holder/ranged_ai/Destroy()
-	QDEL_NULL(attached_action)
+	attached_action = null
 	return ..()
 
 /obj/effect/proc_holder/ranged_ai/proc/toggle(mob/user)

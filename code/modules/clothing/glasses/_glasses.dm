@@ -94,15 +94,22 @@
 	desc = "A pair of snazzy goggles used to protect against chemical spills. Fitted with an analyzer for scanning items and reagents."
 	icon_state = "purple"
 	item_state = "glasses"
-	scan_reagents = TRUE //You can see reagents while wearing science goggles
+	clothing_flags = SCAN_REAGENTS
 	actions_types = list(/datum/action/item_action/toggle_research_scanner)
 	glass_colour_type = /datum/client_colour/glass_colour/purple
 	resistance_flags = ACID_PROOF
-	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 80, "acid" = 100)
+	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 80, "acid" = 100, "stamina" = 0)
 
 /obj/item/clothing/glasses/science/item_action_slot_check(slot)
-	if(slot == SLOT_GLASSES)
+	if(slot == ITEM_SLOT_EYES)
 		return 1
+
+/obj/item/clothing/glasses/science/sciencesun
+	name = "science sunglasses"
+	desc = "A pair of sunglasses outfitted with apparatus to scan reagents, as well as providing an innate understanding of liquid viscosity while in motion. Has enhanced shielding which blocks flashes."
+	icon_state = "sunhudscience"
+	item_state = "sunhudscience"
+	flash_protect = 1
 
 /obj/item/clothing/glasses/night
 	name = "night vision goggles"
@@ -186,32 +193,36 @@
 
 /obj/item/clothing/glasses/sunglasses
 	name = "sunglasses"
-	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Enhanced shielding blocks flashes."
+	desc = "Strangely ancient technology used to help provide rudimentary eye cover. They do not provide flash protection."
 	icon_state = "sun"
 	item_state = "sunglasses"
 	darkness_view = 1
-	flash_protect = 1
 	tint = 1
 	glass_colour_type = /datum/client_colour/glass_colour/gray
 	dog_fashion = /datum/dog_fashion/head
 
-/obj/item/clothing/glasses/sunglasses/reagent
-	name = "beer goggles"
-	desc = "A pair of sunglasses outfitted with apparatus to scan reagents, as well as providing an innate understanding of liquid viscosity while in motion."
-	scan_reagents = TRUE
+/obj/item/clothing/glasses/sunglasses/advanced/
+	name = "advanced sunglasses"
+	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Has enhanced shielding which blocks flashes."
+	flash_protect = 1
 
-/obj/item/clothing/glasses/sunglasses/reagent/equipped(mob/user, slot)
+/obj/item/clothing/glasses/sunglasses/advanced/reagent
+	name = "beer goggles"
+	desc = "A pair of sunglasses outfitted with apparatus to scan reagents, as well as providing an innate understanding of liquid viscosity while in motion. Has enhanced shielding which blocks flashes."
+	clothing_flags = SCAN_REAGENTS
+
+/obj/item/clothing/glasses/sunglasses/advanced/reagent/equipped(mob/user, slot)
 	. = ..()
-	if(ishuman(user) && slot == SLOT_GLASSES)
+	if(ishuman(user) && slot == ITEM_SLOT_EYES)
 		ADD_TRAIT(user, TRAIT_BOOZE_SLIDER, CLOTHING_TRAIT)
 
-/obj/item/clothing/glasses/sunglasses/reagent/dropped(mob/user)
+/obj/item/clothing/glasses/sunglasses/advanced/reagent/dropped(mob/user)
 	. = ..()
 	REMOVE_TRAIT(user, TRAIT_BOOZE_SLIDER, CLOTHING_TRAIT)
 
-/obj/item/clothing/glasses/sunglasses/garb
+/obj/item/clothing/glasses/sunglasses/advanced/garb
 	name = "black gar glasses"
-	desc = "Go beyond impossible and kick reason to the curb!"
+	desc = "Go beyond impossible and kick reason to the curb!  Has enhanced shielding which blocks flashes."
 	icon_state = "garb"
 	item_state = "garb"
 	force = 10
@@ -221,17 +232,17 @@
 	hitsound = 'sound/weapons/bladeslice.ogg'
 	sharpness = IS_SHARP
 
-/obj/item/clothing/glasses/sunglasses/garb/supergarb
+/obj/item/clothing/glasses/sunglasses/advanced/garb/supergarb
 	name = "black giga gar glasses"
-	desc = "Believe in us humans."
+	desc = "Believe in us humans.  Has enhanced shielding which blocks flashes."
 	icon_state = "supergarb"
 	item_state = "garb"
 	force = 12
 	throwforce = 12
 
-/obj/item/clothing/glasses/sunglasses/gar
+/obj/item/clothing/glasses/sunglasses/advanced/gar
 	name = "gar glasses"
-	desc = "Just who the hell do you think I am?!"
+	desc = "Just who the hell do you think I am?!  Has enhanced shielding which blocks flashes."
 	icon_state = "gar"
 	item_state = "gar"
 	force = 10
@@ -242,9 +253,9 @@
 	sharpness = IS_SHARP
 	glass_colour_type = /datum/client_colour/glass_colour/orange
 
-/obj/item/clothing/glasses/sunglasses/gar/supergar
+/obj/item/clothing/glasses/sunglasses/advanced/gar/supergar
 	name = "giga gar glasses"
-	desc = "We evolve past the person we were a minute before. Little by little we advance with each turn. That's how a drill works!"
+	desc = "We evolve past the person we were a minute before. Little by little we advance with each turn. That's how a drill works!  Has enhanced shielding which blocks flashes."
 	icon_state = "supergar"
 	item_state = "gar"
 	force = 12
@@ -269,14 +280,16 @@
 
 /obj/item/clothing/glasses/welding/ghostbuster
 	name = "optical ecto-scanner"
-	desc = "A bulky pair of unwieldy glasses that lets you see things best left unseen. Obscures vision, but also gives a bit of eye protection"
+	desc = "A bulky pair of unwieldy glasses that lets you see things best left unseen. Obscures vision, but also has enhanced shielding which blocks flashes."
 	icon_state = "bustin-g"
 	item_state = "bustin-g"
-	invis_view = SEE_INVISIBLE_OBSERVER
-	invis_override = null
 	flash_protect = 1
 	visor_vars_to_toggle = VISOR_FLASHPROTECT | VISOR_TINT | VISOR_INVISVIEW
 	glass_colour_type = /datum/client_colour/glass_colour/green
+
+/obj/item/clothing/glasses/welding/ghostbuster/ComponentInitialize()
+	. = ..()
+	AddComponent(/datum/component/team_monitor, "ghost", 1)
 
 /obj/item/clothing/glasses/blindfold
 	name = "blindfold"
@@ -290,7 +303,7 @@
 
 /obj/item/clothing/glasses/blindfold/equipped(mob/living/carbon/human/user, slot)
 	. = ..()
-	if(slot == SLOT_GLASSES)
+	if(slot == ITEM_SLOT_EYES)
 		user.become_blind("blindfold_[REF(src)]")
 
 /obj/item/clothing/glasses/blindfold/dropped(mob/living/carbon/human/user)
@@ -305,7 +318,7 @@
 	var/colored_before = FALSE
 
 /obj/item/clothing/glasses/blindfold/white/equipped(mob/living/carbon/human/user, slot)
-	if(ishuman(user) && slot == SLOT_GLASSES)
+	if(ishuman(user) && slot == ITEM_SLOT_EYES)
 		update_icon(user)
 		user.update_inv_glasses() //Color might have been changed by update_icon.
 	..()
@@ -324,8 +337,8 @@
 		M.color = "#[H.eye_color]"
 		. += M
 
-/obj/item/clothing/glasses/sunglasses/big
-	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Larger than average enhanced shielding blocks flashes."
+/obj/item/clothing/glasses/sunglasses/advanced/big
+	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Has enhanced shielding which blocks flashes."
 	icon_state = "bigsunglasses"
 	item_state = "bigsunglasses"
 
@@ -425,7 +438,7 @@
 	item_state = "godeye"
 	vision_flags = SEE_TURFS|SEE_MOBS|SEE_OBJS
 	darkness_view = 8
-	scan_reagents = TRUE
+	clothing_flags = SCAN_REAGENTS
 	lighting_alpha = LIGHTING_PLANE_ALPHA_MOSTLY_INVISIBLE
 	resistance_flags = LAVA_PROOF | FIRE_PROOF
 
@@ -459,8 +472,6 @@
 					else
 						to_chat(H, "You will no longer see glasses colors.")
 					H.update_glasses_color(src, 1)
-	else
-		return ..()
 
 /obj/item/clothing/glasses/proc/change_glass_color(mob/living/carbon/human/H, datum/client_colour/glass_colour/new_color_type)
 	var/old_colour_type = glass_colour_type

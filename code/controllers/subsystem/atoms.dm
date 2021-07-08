@@ -52,6 +52,9 @@ SUBSYSTEM_DEF(atoms)
 	if(late_loaders.len)
 		for(var/I in late_loaders)
 			var/atom/A = I
+			//I hate that we need this
+			if(QDELETED(A))
+				continue
 			A.LateInitialize()
 		testing("Late initialized [late_loaders.len] atoms")
 		late_loaders.Cut()
@@ -88,6 +91,8 @@ SUBSYSTEM_DEF(atoms)
 		qdeleted = TRUE
 	else if(!(A.flags_1 & INITIALIZED_1))
 		BadInitializeCalls[the_type] |= BAD_INIT_DIDNT_INIT
+	else
+		SEND_SIGNAL(A,COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZE)
 
 	return qdeleted || QDELING(A)
 
@@ -145,7 +150,7 @@ SUBSYSTEM_DEF(atoms)
 /datum/controller/subsystem/atoms/Shutdown()
 	var/initlog = InitLog()
 	if(initlog)
-		text2file(initlog, "[GLOB.log_directory]/initialize.log")
+		rustg_file_append(initlog, "[GLOB.log_directory]/initialize.log")
 
 #undef BAD_INIT_QDEL_BEFORE
 #undef BAD_INIT_DIDNT_INIT

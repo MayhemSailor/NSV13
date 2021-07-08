@@ -3,7 +3,8 @@
 
 [![forthebadge](https://forthebadge.com/images/badges/built-with-resentment.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://user-images.githubusercontent.com/8171642/50290880-ffef5500-043a-11e9-8270-a2e5b697c86c.png) [![forinfinityandbyond](https://user-images.githubusercontent.com/5211576/29499758-4efff304-85e6-11e7-8267-62919c3688a9.gif)](https://www.reddit.com/r/SS13/comments/5oplxp/what_is_the_main_problem_with_byond_as_an_engine/dclbu1a)
 
-[![Build Status](https://travis-ci.com/Beestation/NSV13.svg?branch=master)](https://travis-ci.com/Beestation/NSV13) ![Open Issues](https://isitmaintained.com/badge/open/Beestation/NSV13.svg) ![Compile changelogs](https://github.com/BeeStation/NSV13/workflows/Compile%20changelogs/badge.svg)
+[![Build Status](https://github.com/BeeStation/NSV13/workflows/Run%20tests/badge.svg)](https://github.com/BeeStation/NSV13/actions?query=workflow%3A%22Run+tests%22)
+![Open Issues](http://isitmaintained.com/badge/open/BeeStation/NSV13.svg)
 
 **Website:** http://nsv.beestation13.com
 **Code:** https://github.com/Beestation/NSV13
@@ -15,18 +16,13 @@
 There are a number of ways to download the source code. Some are described here, an alternative all-inclusive guide is also located at https://wiki.beestation13.com/view/Downloading_the_source_code
 
 Option 1:
-Follow this: https://wiki.beestation13.com/view/Setting_up_git
+Follow this: https://nsv.beestation13.com/wiki/Setting_up_git
 
 Option 2: Download the source code as a zip by clicking the ZIP button in the
-code tab of https://github.com/DDMers/NSV13
+code tab of https://github.com/BeeStation/NSV13
 (note: this will use a lot of bandwidth if you wish to update and is a lot of
 hassle if you want to make any changes at all, so it's not recommended.)
 
-Option 3: Use our docker image that tracks the master branch (See commits for build status. Again, same caveats as option 2)
-
-```
-docker run -d -p <your port>:1337 -v /path/to/your/config:/beestation/config -v /path/to/your/data:/beestation/data beestation/beestation <dream daemon options i.e. -public or -params>
-```
 
 ## INSTALLATION
 
@@ -34,7 +30,7 @@ First-time installation should be fairly straightforward. First, you'll need
 BYOND installed. You can get it from https://www.byond.com/download. Once you've done
 that, extract the game files to wherever you want to keep them. This is a
 sourcecode-only release, so the next step is to compile the server files.
-Open tgstation.dme by double-clicking it, open the Build menu, and click
+Open beestation.dme by double-clicking it, open the Build menu, and click
 compile. This'll take a little while, and if everything's done right you'll get
 a message like this:
 
@@ -75,7 +71,7 @@ and install it themselves. Directions can be found at the [rust-g
 repo](https://github.com/tgstation/rust-g).
 
 Finally, to start the server, run Dream Daemon and enter the path to your
-compiled tgstation.dmb file. Make sure to set the port to the one you
+compiled beestation.dmb file. Make sure to set the port to the one you
 specified in the config.txt, and set the Security box to 'Safe'. Then press GO
 and the server should start up and be ready to join. It is also recommended that
 you set up the SQL backend (see below).
@@ -101,7 +97,7 @@ https://github.com/tgstation/tgstation-server
 
 NSV13 currently comes equipped with these maps.
 
-<PUT WEBMAP LINKS HERE EVENTUALLY>
+* See the _maps folder. We change this too much.
 
 
 All maps have their own code file that is in the base of the _maps directory. Maps are loaded dynamically when the game starts. Follow this guideline when adding your own map, to your fork, for easy compatibility.
@@ -114,7 +110,7 @@ Anytime you want to make changes to a map it's imperative you use the [Map Mergi
 
 ## AWAY MISSIONS
 
-/tg/station supports loading away missions however they are disabled by default.
+BeeStation supports loading away missions however they are disabled by default.
 
 Map files for away missions are located in the _maps/RandomZLevels directory. Each away mission includes it's own code definitions located in /code/modules/awaymissions/mission_code. These files must be included and compiled with the server beforehand otherwise the server will crash upon trying to load away missions that lack their code.
 
@@ -122,7 +118,7 @@ To enable an away mission open `config/awaymissionconfig.txt` and uncomment one 
 
 ## SQL SETUP
 
-The SQL backend requires a Mariadb server running 10.2 or later. Mysql is not supported but Mariadb is a drop in replacement for mysql. SQL is required for the library, stats tracking, admin notes, and job-only bans, among other features, mostly related to server administration. Your server details go in /config/dbconfig.txt, and the SQL schema is in /SQL/tgstation_schema.sql and /SQL/tgstation_schema_prefix.sql depending on if you want table prefixes.  More detailed setup instructions are located here: https://wiki.beestation13.com/view/Downloading_the_source_code#Setting_up_the_database
+The SQL backend requires a Mariadb server running 10.2 or later. Mysql is not supported but Mariadb is a drop in replacement for mysql. SQL is required for the library, stats tracking, admin notes, and job-only bans, among other features, mostly related to server administration. Your server details go in /config/dbconfig.txt, and the SQL schema is in /SQL/beestation_schema.sql and /SQL/beestation_schema_prefix.sql depending on if you want table prefixes.  More detailed setup instructions are located here: https://wiki.beestation13.com/view/Downloading_the_source_code#Setting_up_the_database
 
 If you are hosting a testing server on windows you can use a standalone version of MariaDB pre load with a blank (but initialized) tgdb database. Find them here: https://tgstation13.download/database/ Just unzip and run for a working (but insecure) database server. Includes a zipped copy of the data folder for easy resetting back to square one.
 
@@ -151,18 +147,20 @@ All code after [commit 333c566b88108de218d882840e61928a9b759d8f on 2014/31/12 at
 All code before [commit 333c566b88108de218d882840e61928a9b759d8f on 2014/31/12 at 4:38 PM PST](https://github.com/tgstation/tgstation/commit/333c566b88108de218d882840e61928a9b759d8f) is licensed under [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
 (Including tools unless their readme specifies otherwise.)
 
-See LICENSE and GPLv3.txt for more details.
+See [LICENSE](LICENSE) and [GPLv3.txt](GPLv3.txt) for more details.
 
 tgui clientside is licensed as a subproject under the MIT license.
 Font Awesome font files, used by tgui, are licensed under the SIL Open Font License v1.1
 tgui assets are licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/).
 The TGS3 API is licensed as a subproject under the MIT license.
 
-See tgui/LICENSE.md for the MIT license.
-See tgui/assets/fonts/SIL-OFL-1.1-LICENSE.md for the SIL Open Font License.
-See the footers of code/\_\_DEFINES/server\_tools.dm, code/modules/server\_tools/st\_commands.dm, and code/modules/server\_tools/st\_inteface.dm for the MIT license.
+See [tgui/LICENSE.md](tgui/LICENSE.md) for the MIT license.
+See [tgui/assets/fonts/SIL-OFL-1.1-LICENSE.md](tgui/assets/fonts/SIL-OFL-1.1-LICENSE.md) for the SIL Open Font License.
+See the footers of [code/\_\_DEFINES/server\_tools.dm](code/__DEFINES/server_tools.dm), [code/modules/server\_tools/st\_commands.dm](code/modules/server_tools/st_commands.dm), and [code/modules/server\_tools/st\_inteface.dm](code/modules/server_tools/st_inteface.dm) for the MIT license.
 
 All assets including icons and sound are under a [Creative Commons 3.0 BY-SA license](https://creativecommons.org/licenses/by-sa/3.0/) unless otherwise indicated.
+
+byond-extools.dll is licensed under MIT. See [MIT.txt](MIT.txt) for more details.
 
 # Other Codebase Credits
 - /tg/, for the codebase.

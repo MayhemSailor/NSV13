@@ -8,8 +8,8 @@
 	icon_state = "defibrillator_mount"
 	density = FALSE
 	use_power = IDLE_POWER_USE
-	idle_power_usage = 1
-	power_channel = EQUIP
+	idle_power_usage = 0
+	power_channel = AREA_USAGE_EQUIP
 	req_one_access = list(ACCESS_MEDICAL, ACCESS_HEADS, ACCESS_SECURITY) //used to control clamps
 	var/obj/item/defibrillator/defib //this mount's defibrillator
 	var/clamps_locked = FALSE //if true, and a defib is loaded, it can't be removed without unlocking the clamps
@@ -26,7 +26,7 @@
 /obj/machinery/defibrillator_mount/examine(mob/user)
 	. = ..()
 	if(defib)
-		. += "<span class='notice'>There is a defib unit hooked up. Alt-click to remove it.<span>"
+		. += "<span class='notice'>There is a defib unit hooked up. Alt-click to remove it.</span>"
 		if(GLOB.security_level >= SEC_LEVEL_RED)
 			. += "<span class='notice'>Due to a security situation, its locking clamps can be toggled by swiping any ID.</span>"
 		else
@@ -35,7 +35,7 @@
 /obj/machinery/defibrillator_mount/process()
 	if(defib?.cell && defib.cell.charge < defib.cell.maxcharge && is_operational())
 		use_power(200)
-		defib.cell.give(180) //90% efficiency, slightly better than the cell charger's 87.5%
+		defib.cell.give(180) //90% efficiency, a bit worse than the cell charger's 100%
 		update_icon()
 
 /obj/machinery/defibrillator_mount/update_icon()
